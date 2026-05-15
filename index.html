@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <title>DevSync | Your Developer Mirror</title>
+</head>
+<body class="bg-black text-white font-sans">
+    <nav class="p-4 border-b border-gray-800 flex justify-between">
+        <h1 class="text-xl font-bold text-indigo-500">DevSync.</h1>
+        <div id="pomo-timer" class="text-red-400 font-mono text-lg">25:00</div>
+    </nav>
+
+    <main class="p-8 max-w-4xl mx-auto">
+        <section class="mb-12 text-center">
+            <h2 class="text-3xl font-bold mb-4">Sync Your Progress</h2>
+            <div class="flex gap-2 justify-center">
+                <input id="gh-user" type="text" placeholder="Enter GitHub Username" class="bg-gray-900 border border-gray-700 p-2 rounded-lg w-64">
+                <button onclick="fetchStats()" class="bg-indigo-600 px-6 py-2 rounded-lg hover:bg-indigo-500">Sync</button>
+            </div>
+        </section>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div id="gh-card" class="bg-gray-900 p-6 rounded-2xl border border-gray-800 hidden">
+                <div class="flex items-center gap-4 mb-4">
+                    <img id="gh-avatar" src="" class="w-12 h-12 rounded-full">
+                    <h3 id="gh-name" class="text-xl font-bold"></h3>
+                </div>
+                <div class="grid grid-cols-2 gap-4 text-center">
+                    <div class="bg-black p-3 rounded-lg"><p class="text-gray-400 text-xs">Repos</p><p id="gh-repos" class="text-xl font-bold"></p></div>
+                    <div class="bg-black p-3 rounded-lg"><p class="text-gray-400 text-xs">Followers</p><p id="gh-followers" class="text-xl font-bold"></p></div>
+                </div>
+            </div>
+            
+            <div class="bg-gray-900 p-6 rounded-2xl border border-gray-800 flex flex-col items-center justify-center">
+                <h3 class="text-gray-400 mb-2">Focus Session</h3>
+                <button onclick="startTimer()" class="text-4xl font-bold text-red-500 hover:scale-105 transition">Start Focus</button>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        async function fetchStats() {
+            const user = document.getElementById('gh-user').value;
+            const res = await fetch(`https://api.github.com/users/${user}`);
+            const data = await res.json();
+            
+            document.getElementById('gh-card').classList.remove('hidden');
+            document.getElementById('gh-name').innerText = data.login;
+            document.getElementById('gh-avatar').src = data.avatar_url;
+            document.getElementById('gh-repos').innerText = data.public_repos;
+            document.getElementById('gh-followers').innerText = data.followers;
+        }
+
+        function startTimer() {
+            let time = 1500;
+            setInterval(() => {
+                let mins = Math.floor(time / 60);
+                let secs = time % 60;
+                document.getElementById('pomo-timer').innerText = `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+                if(time > 0) time--;
+            }, 1000);
+        }
+    </script>
+</body>
+</html>
