@@ -50,7 +50,7 @@
                     <div class="flex items-center gap-4 mb-6">
                         <img id="my-gh-avatar" src="" class="w-16 h-16 rounded-2xl border-2 border-blue-500">
                         <div class="flex-1">
-                            <h3 id="my-gh-name" class="font-bold text-xl text-white"></h3>
+                            <h3 id="my-gh-name" class="font-bold text-xl text-white">Loading...</h3>
                             <button onclick="unlinkAccount('github')" class="text-xs text-red-400 hover:text-red-300">Unlink GitHub</button>
                         </div>
                         <a id="my-gh-link" href="#" target="_blank" class="bg-blue-600/20 text-blue-400 p-2 rounded-xl hover:bg-blue-600 hover:text-white transition text-xs font-bold">Open Profile ↗</a>
@@ -74,10 +74,10 @@
                 <div id="my-lc-card" class="glass p-6 rounded-3xl hidden border-t-4 border-yellow-500 relative shadow-lg shadow-yellow-500/10">
                      <div class="flex items-center gap-4 mb-6">
                         <div class="w-16 h-16 bg-yellow-500/10 rounded-2xl flex items-center justify-center border-2 border-yellow-500 shadow-inner">
-                            <img src="https://upload.wikimedia.org/wikipedia/commons/1/19/LeetCode_logo_black.png" class="w-8 h-8 filter invert opacity-80">
+                            <span class="text-3xl">🚀</span>
                         </div>
                         <div class="flex-1">
-                            <h3 id="my-lc-name" class="font-bold text-xl text-white"></h3>
+                            <h3 id="my-lc-name" class="font-bold text-xl text-white">Loading...</h3>
                             <button onclick="unlinkAccount('leetcode')" class="text-xs text-red-400 hover:text-red-300">Unlink LeetCode</button>
                         </div>
                         <a id="my-lc-link" href="#" target="_blank" class="bg-yellow-500/20 text-yellow-500 p-2 rounded-xl hover:bg-yellow-500 hover:text-black transition text-xs font-bold">Open Profile ↗</a>
@@ -185,8 +185,8 @@
     </nav>
 
     <script>
-        // Mega Stats API for LeetCode
-        const LC_API = 'https://leetcode-stats-api.herokuapp.com/';
+        // NEW RELIABLE VERCEL LEETCODE API 
+        const LC_API = 'https://leetcode-api-faisalshohag.vercel.app/';
 
         // --- On Load: Check Linked Accounts ---
         window.onload = async () => {
@@ -219,27 +219,29 @@
                     if(document.getElementById(`${prefix}-chart`)) {
                         document.getElementById(`${prefix}-chart`).src = `https://ghchart.rshah.org/${username}`;
                     }
+                } else {
+                    document.getElementById(`${prefix}-name`).innerText = "User Not Found";
                 }
-            } catch(e) { console.error("GH Fetch Error", e); }
+            } catch(e) { console.error(e); }
         }
 
         async function fetchLCProfile(username, prefix) {
             try {
-                document.getElementById(`${prefix}-name`).innerText = "Loading...";
                 const res = await fetch(`${LC_API}${username}`);
                 const data = await res.json();
-                if(data.status === "success") {
-                    document.getElementById(`${prefix}-name`).innerText = username;
-                    document.getElementById(`${prefix}-rank`).innerText = data.ranking || 'N/A';
-                    document.getElementById(`${prefix}-acc`).innerText = `${data.acceptanceRate}%` || '0%';
-                    document.getElementById(`${prefix}-easy`).innerText = data.easySolved || 0;
-                    document.getElementById(`${prefix}-med`).innerText = data.mediumSolved || 0;
-                    document.getElementById(`${prefix}-hard`).innerText = data.hardSolved || 0;
-                    document.getElementById(`${prefix}-link`).href = `https://leetcode.com/u/${username}/`;
-                } else {
-                    document.getElementById(`${prefix}-name`).innerText = "API Limit/Error";
-                }
-            } catch(e) { console.error("LC Fetch Error", e); }
+                
+                if(data.errors) throw new Error("Not Found");
+
+                document.getElementById(`${prefix}-name`).innerText = username;
+                document.getElementById(`${prefix}-rank`).innerText = data.ranking || 'N/A';
+                document.getElementById(`${prefix}-acc`).innerText = data.acceptanceRate ? `${data.acceptanceRate}%` : '0%';
+                document.getElementById(`${prefix}-easy`).innerText = data.easySolved || 0;
+                document.getElementById(`${prefix}-med`).innerText = data.mediumSolved || 0;
+                document.getElementById(`${prefix}-hard`).innerText = data.hardSolved || 0;
+                document.getElementById(`${prefix}-link`).href = `https://leetcode.com/u/${username}/`;
+            } catch(e) { 
+                document.getElementById(`${prefix}-name`).innerText = "User Not Found";
+            }
         }
 
         // --- Tab Switching ---
@@ -254,12 +256,12 @@
 
         // --- Linking Logic ---
         function promptAdd(type) {
-            const user = prompt(`Enter your ${type} username to link to Your Stats:`);
+            const user = prompt(`Enter your ${type} username:`);
             if(user) { localStorage.setItem(`my-${type}`, user.trim()); location.reload(); }
         }
         function unlinkAccount(type) { localStorage.removeItem(`my-${type}`); location.reload(); }
 
-        // --- Supercharged Global Search Logic ---
+        // --- SAFE Global Search Logic ---
         async function handleSearch() {
             const user = document.getElementById('global-search').value.trim();
             const type = document.getElementById('search-type').value;
@@ -267,60 +269,67 @@
             const content = document.getElementById('result-content');
             
             if(!user) return;
+            
             card.classList.remove('hidden');
-            content.innerHTML = `<div class="text-center py-8"><p class="animate-pulse text-xl font-bold">Scanning ${type} for ${user}...</p></div>`;
+            card.className = "glass p-8 rounded-3xl mt-6 relative max-w-2xl mx-auto shadow-2xl block border-t-4 border-slate-500";
+            content.innerHTML = `<div class="text-center py-8"><p class="animate-pulse text-xl font-bold">Searching ${type} for ${user}...</p></div>`;
 
-            if(type === 'github') {
-                card.className = "glass p-8 rounded-3xl hidden border-l-8 mt-6 relative max-w-2xl mx-auto shadow-2xl border-blue-500 block";
-                const res = await fetch(`https://api.github.com/users/${user}`);
-                const data = await res.json();
-                if(data.login) {
-                    content.innerHTML = `
-                        <div class="flex items-center gap-6 mb-6">
-                            <img src="${data.avatar_url}" class="w-20 h-20 rounded-2xl border-2 border-blue-500 shadow-lg">
-                            <div class="flex-1">
-                                <h3 class="font-bold text-2xl">${data.name || data.login}</h3>
-                                <p class="text-sm text-blue-400 font-bold">@${data.login}</p>
+            try {
+                if(type === 'github') {
+                    const res = await fetch(`https://api.github.com/users/${user}`);
+                    const data = await res.json();
+                    if(data.login) {
+                        card.classList.replace('border-slate-500', 'border-blue-500');
+                        content.innerHTML = `
+                            <div class="flex items-center gap-6 mb-6">
+                                <img src="${data.avatar_url}" class="w-20 h-20 rounded-2xl border-2 border-blue-500 shadow-lg">
+                                <div class="flex-1">
+                                    <h3 class="font-bold text-2xl">${data.name || data.login}</h3>
+                                    <p class="text-sm text-blue-400 font-bold">@${data.login}</p>
+                                </div>
+                                <a href="${data.html_url}" target="_blank" class="bg-blue-600 px-4 py-2 rounded-xl font-bold text-sm hover:bg-blue-500 transition">View on GitHub</a>
                             </div>
-                            <a href="${data.html_url}" target="_blank" class="bg-blue-600 px-4 py-2 rounded-xl font-bold text-sm hover:bg-blue-500 transition">View on GitHub</a>
-                        </div>
-                        <div class="grid grid-cols-3 gap-4 text-center">
-                            <div class="bg-slate-900/80 p-4 rounded-xl border border-white/5"><p class="text-slate-500 text-xs font-bold uppercase mb-1">Repos</p><p class="text-2xl font-black">${data.public_repos}</p></div>
-                            <div class="bg-slate-900/80 p-4 rounded-xl border border-white/5"><p class="text-slate-500 text-xs font-bold uppercase mb-1">Followers</p><p class="text-2xl font-black">${data.followers}</p></div>
-                            <div class="bg-slate-900/80 p-4 rounded-xl border border-white/5"><p class="text-slate-500 text-xs font-bold uppercase mb-1">Following</p><p class="text-2xl font-black">${data.following}</p></div>
-                        </div>
-                    `;
-                } else { content.innerHTML = `<p class='text-red-400 text-center py-4'>GitHub User "${user}" not found.</p>`; }
-            } else {
-                card.className = "glass p-8 rounded-3xl hidden border-l-8 mt-6 relative max-w-2xl mx-auto shadow-2xl border-yellow-500 block";
-                const res = await fetch(`${LC_API}${user}`);
-                const data = await res.json();
-                if(data.status === "success") {
-                    content.innerHTML = `
-                        <div class="flex items-center gap-6 mb-6">
-                            <div class="w-20 h-20 bg-yellow-500/10 rounded-2xl flex items-center justify-center border-2 border-yellow-500"><span class="text-4xl">🚀</span></div>
-                            <div class="flex-1">
-                                <h3 class="font-bold text-2xl">${user}</h3>
-                                <p class="text-sm text-yellow-500 font-bold uppercase">LeetCode Stats Loaded</p>
+                            <div class="grid grid-cols-3 gap-4 text-center">
+                                <div class="bg-slate-900/80 p-4 rounded-xl border border-white/5"><p class="text-slate-500 text-xs font-bold uppercase mb-1">Repos</p><p class="text-2xl font-black">${data.public_repos}</p></div>
+                                <div class="bg-slate-900/80 p-4 rounded-xl border border-white/5"><p class="text-slate-500 text-xs font-bold uppercase mb-1">Followers</p><p class="text-2xl font-black">${data.followers}</p></div>
+                                <div class="bg-slate-900/80 p-4 rounded-xl border border-white/5"><p class="text-slate-500 text-xs font-bold uppercase mb-1">Following</p><p class="text-2xl font-black">${data.following}</p></div>
                             </div>
-                            <a href="https://leetcode.com/u/${user}/" target="_blank" class="bg-yellow-500 text-black px-4 py-2 rounded-xl font-bold text-sm hover:bg-yellow-400 transition">View on LeetCode</a>
-                        </div>
-                        <div class="grid grid-cols-2 gap-4 text-center mb-4">
-                            <div class="bg-slate-900/80 p-4 rounded-xl border border-white/5"><p class="text-slate-500 text-xs font-bold uppercase mb-1">Global Ranking</p><p class="text-2xl font-black">${data.ranking}</p></div>
-                            <div class="bg-slate-900/80 p-4 rounded-xl border border-white/5"><p class="text-slate-500 text-xs font-bold uppercase mb-1">Acceptance Rate</p><p class="text-2xl font-black">${data.acceptanceRate}%</p></div>
-                        </div>
-                        <div class="grid grid-cols-3 gap-2 text-center">
-                            <div class="bg-slate-900/80 p-3 rounded-xl border-b-4 border-green-500"><p class="text-slate-400 text-[10px] font-bold uppercase">Easy</p><p class="text-xl font-black text-green-400">${data.easySolved}</p></div>
-                            <div class="bg-slate-900/80 p-3 rounded-xl border-b-4 border-yellow-500"><p class="text-slate-400 text-[10px] font-bold uppercase">Medium</p><p class="text-xl font-black text-yellow-400">${data.mediumSolved}</p></div>
-                            <div class="bg-slate-900/80 p-3 rounded-xl border-b-4 border-red-500"><p class="text-slate-400 text-[10px] font-bold uppercase">Hard</p><p class="text-xl font-black text-red-400">${data.hardSolved}</p></div>
-                        </div>
-                    `;
-                } else { content.innerHTML = `<p class='text-red-400 text-center py-4'>LeetCode User "${user}" not found.</p>`; }
+                        `;
+                    } else { throw new Error("Not found"); }
+                } else {
+                    const res = await fetch(`${LC_API}${user}`);
+                    const data = await res.json();
+                    if(!data.errors) {
+                        card.classList.replace('border-slate-500', 'border-yellow-500');
+                        content.innerHTML = `
+                            <div class="flex items-center gap-6 mb-6">
+                                <div class="w-20 h-20 bg-yellow-500/10 rounded-2xl flex items-center justify-center border-2 border-yellow-500"><span class="text-4xl">🚀</span></div>
+                                <div class="flex-1">
+                                    <h3 class="font-bold text-2xl">${user}</h3>
+                                    <p class="text-sm text-yellow-500 font-bold uppercase">LeetCode Stats Loaded</p>
+                                </div>
+                                <a href="https://leetcode.com/u/${user}/" target="_blank" class="bg-yellow-500 text-black px-4 py-2 rounded-xl font-bold text-sm hover:bg-yellow-400 transition">View on LeetCode</a>
+                            </div>
+                            <div class="grid grid-cols-2 gap-4 text-center mb-4">
+                                <div class="bg-slate-900/80 p-4 rounded-xl border border-white/5"><p class="text-slate-500 text-xs font-bold uppercase mb-1">Global Ranking</p><p class="text-2xl font-black">${data.ranking}</p></div>
+                                <div class="bg-slate-900/80 p-4 rounded-xl border border-white/5"><p class="text-slate-500 text-xs font-bold uppercase mb-1">Acceptance Rate</p><p class="text-2xl font-black">${data.acceptanceRate}%</p></div>
+                            </div>
+                            <div class="grid grid-cols-3 gap-2 text-center">
+                                <div class="bg-slate-900/80 p-3 rounded-xl border-b-4 border-green-500"><p class="text-slate-400 text-[10px] font-bold uppercase">Easy</p><p class="text-xl font-black text-green-400">${data.easySolved}</p></div>
+                                <div class="bg-slate-900/80 p-3 rounded-xl border-b-4 border-yellow-500"><p class="text-slate-400 text-[10px] font-bold uppercase">Medium</p><p class="text-xl font-black text-yellow-400">${data.mediumSolved}</p></div>
+                                <div class="bg-slate-900/80 p-3 rounded-xl border-b-4 border-red-500"><p class="text-slate-400 text-[10px] font-bold uppercase">Hard</p><p class="text-xl font-black text-red-400">${data.hardSolved}</p></div>
+                            </div>
+                        `;
+                    } else { throw new Error("Not found"); }
+                }
+            } catch(e) {
+                 card.classList.replace('border-slate-500', 'border-red-500');
+                 content.innerHTML = `<p class='text-red-400 text-center py-4 font-bold'>Error: User "${user}" not found.</p>`;
             }
         }
         function closeResult() { document.getElementById('result-card').classList.add('hidden'); }
 
-        // --- Advanced Compare Users Logic ---
+        // --- SAFE Compare Users Logic ---
         async function compareUsers() {
             const type = document.getElementById('compare-type').value;
             const u1 = document.getElementById('user1').value.trim();
@@ -339,18 +348,20 @@
                 c2.className = "glass p-6 rounded-3xl border-t-8 border-purple-500 text-center shadow-lg";
                 
                 const fetchGH = async (u, target) => {
-                    const res = await fetch(`https://api.github.com/users/${u}`);
-                    const data = await res.json();
-                    if(data.login) {
-                        target.innerHTML = `
-                            <img src="${data.avatar_url}" class="w-24 h-24 rounded-full mx-auto mb-4 border-4 border-slate-800 shadow-xl">
-                            <h3 class="text-2xl font-bold mb-6">${data.login}</h3>
-                            <div class="flex justify-between bg-slate-900/80 p-4 rounded-xl mb-3 border border-white/5"><span class="text-slate-400 font-bold text-sm">Public Repos</span><span class="font-black text-white text-lg">${data.public_repos}</span></div>
-                            <div class="flex justify-between bg-slate-900/80 p-4 rounded-xl mb-3 border border-white/5"><span class="text-slate-400 font-bold text-sm">Followers</span><span class="font-black text-white text-lg">${data.followers}</span></div>
-                            <div class="flex justify-between bg-slate-900/80 p-4 rounded-xl mb-3 border border-white/5"><span class="text-slate-400 font-bold text-sm">Following</span><span class="font-black text-white text-lg">${data.following}</span></div>
-                            <div class="flex justify-between bg-slate-900/80 p-4 rounded-xl border border-white/5"><span class="text-slate-400 font-bold text-sm">Public Gists</span><span class="font-black text-white text-lg">${data.public_gists}</span></div>
-                        `;
-                    } else { target.innerHTML = `<p class="py-10 text-red-400">User ${u} not found.</p>`; }
+                    try {
+                        const res = await fetch(`https://api.github.com/users/${u}`);
+                        const data = await res.json();
+                        if(data.login) {
+                            target.innerHTML = `
+                                <img src="${data.avatar_url}" class="w-24 h-24 rounded-full mx-auto mb-4 border-4 border-slate-800 shadow-xl">
+                                <h3 class="text-2xl font-bold mb-6">${data.login}</h3>
+                                <div class="flex justify-between bg-slate-900/80 p-4 rounded-xl mb-3 border border-white/5"><span class="text-slate-400 font-bold text-sm">Public Repos</span><span class="font-black text-white text-lg">${data.public_repos}</span></div>
+                                <div class="flex justify-between bg-slate-900/80 p-4 rounded-xl mb-3 border border-white/5"><span class="text-slate-400 font-bold text-sm">Followers</span><span class="font-black text-white text-lg">${data.followers}</span></div>
+                                <div class="flex justify-between bg-slate-900/80 p-4 rounded-xl mb-3 border border-white/5"><span class="text-slate-400 font-bold text-sm">Following</span><span class="font-black text-white text-lg">${data.following}</span></div>
+                                <div class="flex justify-between bg-slate-900/80 p-4 rounded-xl border border-white/5"><span class="text-slate-400 font-bold text-sm">Public Gists</span><span class="font-black text-white text-lg">${data.public_gists}</span></div>
+                            `;
+                        } else { throw new Error("Not found"); }
+                    } catch(e) { target.innerHTML = `<p class="py-10 text-red-400">User ${u} not found.</p>`; }
                 };
                 fetchGH(u1, c1); fetchGH(u2, c2);
             } else {
@@ -358,18 +369,20 @@
                 c2.className = "glass p-6 rounded-3xl border-t-8 border-orange-500 text-center shadow-lg";
                 
                 const fetchLC = async (u, target) => {
-                    const res = await fetch(`${LC_API}${u}`);
-                    const data = await res.json();
-                    if(data.status === "success") {
-                        target.innerHTML = `
-                            <div class="w-24 h-24 bg-yellow-500/10 rounded-full mx-auto mb-4 flex items-center justify-center border-4 border-slate-800 text-4xl shadow-xl">🚀</div>
-                            <h3 class="text-2xl font-bold mb-6">${u}</h3>
-                            <div class="flex justify-between bg-slate-900/80 p-4 rounded-xl mb-3 border border-white/5"><span class="text-slate-400 font-bold text-sm">Total Solved</span><span class="font-black text-white text-lg">${data.totalSolved}</span></div>
-                            <div class="flex justify-between bg-slate-900/80 p-4 rounded-xl mb-3 border border-white/5"><span class="text-slate-400 font-bold text-sm">Global Ranking</span><span class="font-black text-white text-lg">${data.ranking}</span></div>
-                            <div class="flex justify-between bg-slate-900/80 p-4 rounded-xl mb-3 border border-white/5"><span class="text-slate-400 font-bold text-sm">Acceptance Rate</span><span class="font-black text-white text-lg">${data.acceptanceRate}%</span></div>
-                            <div class="flex justify-between bg-slate-900/80 p-4 rounded-xl border border-white/5"><span class="text-slate-400 font-bold text-sm">Contribution Pts</span><span class="font-black text-white text-lg">${data.contributionPoints}</span></div>
-                        `;
-                    } else { target.innerHTML = `<p class="py-10 text-red-400">User ${u} not found.</p>`; }
+                    try {
+                        const res = await fetch(`${LC_API}${u}`);
+                        const data = await res.json();
+                        if(!data.errors) {
+                            target.innerHTML = `
+                                <div class="w-24 h-24 bg-yellow-500/10 rounded-full mx-auto mb-4 flex items-center justify-center border-4 border-slate-800 text-4xl shadow-xl">🚀</div>
+                                <h3 class="text-2xl font-bold mb-6">${u}</h3>
+                                <div class="flex justify-between bg-slate-900/80 p-4 rounded-xl mb-3 border border-white/5"><span class="text-slate-400 font-bold text-sm">Total Solved</span><span class="font-black text-white text-lg">${data.totalSolved}</span></div>
+                                <div class="flex justify-between bg-slate-900/80 p-4 rounded-xl mb-3 border border-white/5"><span class="text-slate-400 font-bold text-sm">Global Ranking</span><span class="font-black text-white text-lg">${data.ranking}</span></div>
+                                <div class="flex justify-between bg-slate-900/80 p-4 rounded-xl mb-3 border border-white/5"><span class="text-slate-400 font-bold text-sm">Acceptance Rate</span><span class="font-black text-white text-lg">${data.acceptanceRate}%</span></div>
+                                <div class="flex justify-between bg-slate-900/80 p-4 rounded-xl border border-white/5"><span class="text-slate-400 font-bold text-sm">Contribution Pts</span><span class="font-black text-white text-lg">${data.contributionPoints}</span></div>
+                            `;
+                        } else { throw new Error("Not found"); }
+                    } catch(e) { target.innerHTML = `<p class="py-10 text-red-400">User ${u} not found.</p>`; }
                 };
                 fetchLC(u1, c1); fetchLC(u2, c2);
             }
