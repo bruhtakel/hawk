@@ -1,64 +1,107 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DevHawk | Your Developer Mirror</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <title>DevSync | Your Developer Mirror</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background: #0f172a; }
+        .glass { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.1); }
+    </style>
 </head>
-<body class="bg-black text-white font-sans">
-    <nav class="p-4 border-b border-gray-800 flex justify-between">
-        <h1 class="text-xl font-bold text-indigo-500">DevSync.</h1>
-        <div id="pomo-timer" class="text-red-400 font-mono text-lg">25:00</div>
+<body class="text-slate-200 min-h-screen">
+
+    <nav class="p-6 flex justify-between items-center border-b border-slate-800">
+        <h1 class="text-2xl font-800 tracking-tighter text-white">DEV<span class="text-blue-500">HAWK</span></h1>
+        <div id="pomo-timer" class="font-mono text-2xl font-bold text-red-500 bg-red-500/10 px-4 py-1 rounded-full">25:00</div>
     </nav>
 
-    <main class="p-8 max-w-4xl mx-auto">
-        <section class="mb-12 text-center">
-            <h2 class="text-3xl font-bold mb-4">Sync Your Progress</h2>
-            <div class="flex gap-2 justify-center">
-                <input id="gh-user" type="text" placeholder="Enter GitHub Username" class="bg-gray-900 border border-gray-700 p-2 rounded-lg w-64">
-                <button onclick="fetchStats()" class="bg-indigo-600 px-6 py-2 rounded-lg hover:bg-indigo-500">Sync</button>
+    <main class="max-w-4xl mx-auto p-8">
+        <section class="text-center mb-16">
+            <h2 class="text-4xl font-bold text-white mb-6">Mirror Your Progress</h2>
+            <div class="flex max-w-md mx-auto gap-2 p-2 glass rounded-2xl">
+                <input id="gh-user" type="text" placeholder="Enter GitHub Username" 
+                       class="bg-transparent border-none focus:ring-0 flex-1 px-4 text-white">
+                <button onclick="fetchStats()" class="bg-blue-600 hover:bg-blue-500 text-white px-6 py-2 rounded-xl font-bold transition">Sync</button>
             </div>
         </section>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div id="gh-card" class="bg-gray-900 p-6 rounded-2xl border border-gray-800 hidden">
-                <div class="flex items-center gap-4 mb-4">
-                    <img id="gh-avatar" src="" class="w-12 h-12 rounded-full">
-                    <h3 id="gh-name" class="text-xl font-bold"></h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div id="gh-card" class="glass p-8 rounded-[2rem] hidden transition-all duration-500">
+                <div class="flex items-center gap-4 mb-8">
+                    <img id="gh-avatar" src="" class="w-20 h-20 rounded-2xl border-2 border-blue-500 shadow-lg shadow-blue-500/20">
+                    <div>
+                        <h3 id="gh-name" class="text-2xl font-bold text-white">Developer</h3>
+                        <p class="text-slate-400 text-sm">Verified Profile</p>
+                    </div>
                 </div>
-                <div class="grid grid-cols-2 gap-4 text-center">
-                    <div class="bg-black p-3 rounded-lg"><p class="text-gray-400 text-xs">Repos</p><p id="gh-repos" class="text-xl font-bold"></p></div>
-                    <div class="bg-black p-3 rounded-lg"><p class="text-gray-400 text-xs">Followers</p><p id="gh-followers" class="text-xl font-bold"></p></div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="bg-slate-900/50 p-4 rounded-2xl text-center">
+                        <p class="text-slate-500 text-xs uppercase font-bold tracking-widest mb-1">Public Repos</p>
+                        <p id="gh-repos" class="text-2xl font-extrabold text-blue-400">0</p>
+                    </div>
+                    <div class="bg-slate-900/50 p-4 rounded-2xl text-center">
+                        <p class="text-slate-500 text-xs uppercase font-bold tracking-widest mb-1">Followers</p>
+                        <p id="gh-followers" class="text-2xl font-extrabold text-indigo-400">0</p>
+                    </div>
                 </div>
             </div>
-            
-            <div class="bg-gray-900 p-6 rounded-2xl border border-gray-800 flex flex-col items-center justify-center">
-                <h3 class="text-gray-400 mb-2">Focus Session</h3>
-                <button onclick="startTimer()" class="text-4xl font-bold text-red-500 hover:scale-105 transition">Start Focus</button>
+
+            <div class="glass p-8 rounded-[2rem] flex flex-col items-center justify-center text-center">
+                <p class="text-slate-500 text-sm font-bold uppercase tracking-widest mb-4">Deep Work Session</p>
+                <button id="timer-btn" onclick="startTimer()" 
+                        class="w-full py-4 rounded-2xl bg-blue-600/10 text-blue-400 border border-blue-500/20 text-xl font-bold hover:bg-blue-600 hover:text-white transition-all duration-300">
+                    Start Focus
+                </button>
             </div>
         </div>
     </main>
 
     <script>
-        async function fetchStats() {
-            const user = document.getElementById('gh-user').value;
-            const res = await fetch(`https://api.github.com/users/${user}`);
-            const data = await res.json();
-            
-            document.getElementById('gh-card').classList.remove('hidden');
-            document.getElementById('gh-name').innerText = data.login;
-            document.getElementById('gh-avatar').src = data.avatar_url;
-            document.getElementById('gh-repos').innerText = data.public_repos;
-            document.getElementById('gh-followers').innerText = data.followers;
-        }
+        // --- Timer Logic ---
+        let timeLeft = 25 * 60;
+        let timerId = null;
 
         function startTimer() {
-            let time = 1500;
-            setInterval(() => {
-                let mins = Math.floor(time / 60);
-                let secs = time % 60;
-                document.getElementById('pomo-timer').innerText = `${mins}:${secs < 10 ? '0' : ''}${secs}`;
-                if(time > 0) time--;
-            }, 1000);
+            const btn = document.getElementById('timer-btn');
+            if (timerId) {
+                clearInterval(timerId);
+                timerId = null;
+                timeLeft = 25 * 60;
+                btn.innerText = "Start Focus";
+                document.getElementById('pomo-timer').innerText = "25:00";
+            } else {
+                btn.innerText = "Reset Timer";
+                timerId = setInterval(() => {
+                    timeLeft--;
+                    const mins = Math.floor(timeLeft / 60);
+                    const secs = timeLeft % 60;
+                    document.getElementById('pomo-timer').innerText = `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+                    if (timeLeft <= 0) clearInterval(timerId);
+                }, 1000);
+            }
+        }
+
+        // --- GitHub Sync Logic ---
+        async function fetchStats() {
+            const username = document.getElementById('gh-user').value;
+            if (!username) return;
+
+            const res = await fetch(`https://api.github.com/users/${username}`);
+            const data = await res.json();
+            
+            if (data.login) {
+                const card = document.getElementById('gh-card');
+                card.classList.remove('hidden');
+                document.getElementById('gh-avatar').src = data.avatar_url;
+                document.getElementById('gh-name').innerText = data.name || data.login;
+                document.getElementById('gh-repos').innerText = data.public_repos;
+                document.getElementById('gh-followers').innerText = data.followers;
+            } else {
+                alert("Developer profile not found on GitHub!");
+            }
         }
     </script>
 </body>
