@@ -3,79 +3,90 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DevHawk | Your Developer Stats</title>
+    <title>DevHawk | Developer Mirror</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
-<style>
-        /* 1. Animated Gradient Background */
-        body { 
-            font-family: 'Plus Jakarta Sans', sans-serif; 
-            background: linear-gradient(-45deg, #020617, #0f172a, #1e1b4b, #020617);
+    <style>
+        /* 1. Softer, Premium Blue/Indigo Gradient */
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: linear-gradient(
+                -45deg, 
+                #0f172a, /* Slate */
+                #1e3a8a, /* Deep Blue */
+                #312e81, /* Indigo */
+                #020617  /* Midnight */
+            );
             background-size: 400% 400%;
-            animation: gradientBG 15s ease infinite;
-            color: white; 
-            overflow-x: hidden; 
+            animation: gradientShift 15s ease infinite; 
+            color: white;
+            overflow-x: hidden;
+            margin: 0;
+            min-height: 100vh;
         }
-        
-        @keyframes gradientBG {
+
+        @keyframes gradientShift {
             0% { background-position: 0% 50%; }
             50% { background-position: 100% 50%; }
             100% { background-position: 0% 50%; }
         }
 
-        /* 2. Enhanced Glass with Hover Glow & Float */
-        .glass { 
-            background: rgba(15, 23, 42, 0.6); 
-            backdrop-filter: blur(20px); 
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid rgba(255,255,255,0.08); 
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        
-        .glass:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 20px 40px -15px rgba(59, 130, 246, 0.2);
-            border-color: rgba(255,255,255,0.15);
+        /* 2. Advanced "macOS" Glassmorphism */
+        .glass {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.01) 100%) !important;
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid rgba(255, 255, 255, 0.05); 
+            box-shadow: 
+                inset 1px 1px 0px rgba(255, 255, 255, 0.1), 
+                0 10px 40px 0 rgba(0, 0, 0, 0.3); 
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); 
         }
 
-        /* 3. The Pomodoro Circle (Kept Intact) */
-        .timer-circle { 
-            width: 260px; height: 260px; border-radius: 50%; 
-            border: 6px solid rgba(255,255,255,0.05); 
-            display: flex; align-items: center; justify-content: center; 
-            position: relative; transition: all 0.5s; 
-            background: rgba(0,0,0,0.2);
+        /* 3. Smooth Hover Float */
+        .glass:hover {
+            transform: translateY(-5px); 
+            box-shadow: 
+                inset 1px 1px 0px rgba(255, 255, 255, 0.2), 
+                0 15px 40px -10px rgba(59, 130, 246, 0.4); 
         }
-        .timer-circle.active { 
-            border-color: #3b82f6; 
-            box-shadow: 0 0 40px rgba(59, 130, 246, 0.4), inset 0 0 20px rgba(59, 130, 246, 0.2); 
+
+        .gh-chart { filter: hue-rotate(180deg) invert(1) opacity(0.8); transition: opacity 0.3s; }
+        .gh-chart:hover { opacity: 1; filter: hue-rotate(180deg) invert(1) drop-shadow(0 0 10px rgba(59, 130, 246, 0.5)); }
+
+        .timer-circle {
+            width: 260px; height: 260px; border-radius: 50%;
+            border: 6px solid rgba(255, 255, 255, 0.05);
+            display: flex; align-items: center; justify-content: center;
+            position: relative; transition: all 0.5s;
         }
-        
+        .timer-circle.active {
+            border-color: #3b82f6;
+            box-shadow: 0 0 40px rgba(59, 130, 246, 0.5), inset 0 0 20px rgba(59, 130, 246, 0.3);
+        }
         ::-webkit-scrollbar { display: none; }
-        .gh-chart { filter: hue-rotate(180deg) invert(1) opacity(0.85); transition: opacity 0.3s; }
-        .gh-chart:hover { opacity: 1; filter: hue-rotate(180deg) invert(1) drop-shadow(0 0 8px rgba(59, 130, 246, 0.5)); }
     </style>
 </head>
 <body class="min-h-screen pb-24 md:pb-0">
 
-    <nav class="p-6 flex justify-between items-center max-w-6xl mx-auto">
+    <nav class="p-6 flex justify-between items-center max-w-7xl mx-auto">
         <h1 class="text-2xl font-800 tracking-tighter text-white">DEV<span class="text-blue-500">HAWK</span></h1>
-        
         <div class="glass px-2 py-1 rounded-2xl hidden md:flex gap-1 z-50">
             <button onclick="showTab('dash')" id="btn-dash" class="px-6 py-2 rounded-xl text-sm font-bold transition-all bg-white/10 hover:bg-white/20">Dashboard</button>
-            <button onclick="showTab('pomo')" id="btn-pomo" class="px-6 py-2 rounded-xl text-sm font-bold transition-all hover:bg-white/20">Pomodoro</button>
+            <button onclick="showTab('pomo')" id="btn-pomo" class="px-6 py-2 rounded-xl text-sm font-bold transition-all hover:bg-white/20">Deep Work</button>
             <button onclick="showTab('compare')" id="btn-compare" class="px-6 py-2 rounded-xl text-sm font-bold transition-all hover:bg-white/20 text-purple-400">Compare</button>
         </div>
     </nav>
 
-    <main class="max-w-6xl mx-auto px-4 md:px-8 mt-4">
+    <main class="max-w-7xl mx-auto px-4 md:px-8 mt-4">
         
         <div id="tab-dash" class="space-y-8 animate-in fade-in duration-500">
             
-            <div class="glass p-4 rounded-2xl flex flex-col md:flex-row gap-2 max-w-2xl mx-auto">
+            <div class="glass p-4 rounded-2xl flex flex-col md:flex-row gap-2 max-w-3xl mx-auto">
                 <select id="search-type" class="bg-slate-800 text-white border border-white/10 rounded-xl px-4 py-2 outline-none text-sm font-bold focus:ring-2 focus:ring-blue-500">
-                    <option value="github">Search GitHub</option>
-                    <option value="leetcode">Search LeetCode</option>
+                    <option class="bg-slate-900 text-white" value="github">Search GitHub</option>
+                    <option class="bg-slate-900 text-white" value="leetcode">Search LeetCode</option>
+                    <option class="bg-slate-900 text-white" value="codeforces">Search Codeforces</option>
                 </select>
                 <input id="global-search" type="text" placeholder="Enter developer username..." class="bg-slate-900/50 border border-white/10 rounded-xl flex-1 px-4 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
                 <button onclick="handleSearch()" class="bg-blue-600 hover:bg-blue-500 px-8 py-2 rounded-xl text-sm font-bold transition">Search</button>
@@ -86,78 +97,75 @@
                 <p class="text-slate-400 text-sm mt-2">Track your coding journey across platforms.</p>
             </header>
 
-            <div id="linked-stats-area" class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div id="my-gh-card" class="glass p-6 rounded-3xl hidden border-t-4 border-blue-500 relative shadow-lg shadow-blue-500/10">
+            <div id="linked-stats-area" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div id="my-gh-card" class="glass p-6 rounded-3xl hidden border-t-4 border-blue-500 relative">
                     <div class="flex items-center gap-4 mb-6">
                         <img id="my-gh-avatar" src="" class="w-16 h-16 rounded-2xl border-2 border-blue-500">
                         <div class="flex-1">
-                            <h3 id="my-gh-name" class="font-bold text-xl text-white">Loading...</h3>
+                            <h3 id="my-gh-name" class="font-bold text-xl text-white truncate max-w-[120px]">Loading...</h3>
                             <button onclick="unlinkAccount('github')" class="text-xs text-red-400 hover:text-red-300">Unlink GitHub</button>
                         </div>
-                        <a id="my-gh-link" href="#" target="_blank" class="bg-blue-600/20 text-blue-400 p-2 rounded-xl hover:bg-blue-600 hover:text-white transition text-xs font-bold">Open Profile ↗</a>
+                        <a id="my-gh-link" href="#" target="_blank" class="bg-blue-600/20 text-blue-400 p-2 rounded-xl hover:bg-blue-600 hover:text-white transition text-[10px] font-bold">Profile ↗</a>
                     </div>
                     <div class="flex justify-between bg-slate-900/80 p-4 rounded-xl mb-4 text-center border border-white/5">
-                         <div class="flex-1 border-r border-white/10">
-                            <p class="text-slate-500 text-[10px] font-bold uppercase mb-1">Repos</p>
-                            <p id="my-gh-repos" class="text-2xl font-black text-white">0</p>
-                        </div>
-                        <div class="flex-1">
-                            <p class="text-slate-500 text-[10px] font-bold uppercase mb-1">Followers</p>
-                            <p id="my-gh-followers" class="text-2xl font-black text-white">0</p>
-                        </div>
+                         <div class="flex-1 border-r border-white/10"><p class="text-slate-500 text-[10px] font-bold uppercase mb-1">Repos</p><p id="my-gh-repos" class="text-xl font-black text-white">0</p></div>
+                        <div class="flex-1"><p class="text-slate-500 text-[10px] font-bold uppercase mb-1">Followers</p><p id="my-gh-followers" class="text-xl font-black text-white">0</p></div>
                     </div>
                     <div class="bg-slate-900/80 p-3 rounded-xl overflow-hidden w-full overflow-x-auto text-center border border-white/5">
                         <p class="text-slate-500 text-[10px] font-bold uppercase mb-2">Contributions</p>
-                        <img id="my-gh-chart" src="" alt="Contributions" class="gh-chart h-16 mx-auto">
+                        <img id="my-gh-chart" src="" alt="Contributions" class="gh-chart h-12 mx-auto">
                     </div>
                 </div>
 
-                <div id="my-lc-card" class="glass p-6 rounded-3xl hidden border-t-4 border-yellow-500 relative shadow-lg shadow-yellow-500/10">
+                <div id="my-lc-card" class="glass p-6 rounded-3xl hidden border-t-4 border-yellow-500 relative">
                      <div class="flex items-center gap-4 mb-6">
-                        <div class="w-16 h-16 bg-yellow-500/10 rounded-2xl flex items-center justify-center border-2 border-yellow-500 shadow-inner">
-                            <span class="text-3xl">🚀</span>
-                        </div>
+                        <div class="w-16 h-16 bg-yellow-500/10 rounded-2xl flex items-center justify-center border-2 border-yellow-500 shadow-inner"><span class="text-3xl">🚀</span></div>
                         <div class="flex-1">
-                            <h3 id="my-lc-name" class="font-bold text-xl text-white">Loading...</h3>
+                            <h3 id="my-lc-name" class="font-bold text-xl text-white truncate max-w-[120px]">Loading...</h3>
                             <button onclick="unlinkAccount('leetcode')" class="text-xs text-red-400 hover:text-red-300">Unlink LeetCode</button>
                         </div>
-                        <a id="my-lc-link" href="#" target="_blank" class="bg-yellow-500/20 text-yellow-500 p-2 rounded-xl hover:bg-yellow-500 hover:text-black transition text-xs font-bold">Open Profile ↗</a>
+                        <a id="my-lc-link" href="#" target="_blank" class="bg-yellow-500/20 text-yellow-500 p-2 rounded-xl hover:bg-yellow-500 hover:text-black transition text-[10px] font-bold">Profile ↗</a>
                     </div>
                      <div class="bg-slate-900/80 p-4 rounded-xl mb-4 flex justify-between text-center border border-white/5">
-                        <div class="flex-1 border-r border-white/10">
-                            <p class="text-slate-500 text-[10px] font-bold uppercase">Global Rank</p>
-                            <p id="my-lc-rank" class="text-lg font-black text-white">N/A</p>
-                        </div>
-                        <div class="flex-1">
-                            <p class="text-slate-500 text-[10px] font-bold uppercase">Total Solved</p>
-                            <p id="my-lc-total" class="text-lg font-black text-white">0</p>
-                        </div>
+                        <div class="flex-1 border-r border-white/10"><p class="text-slate-500 text-[10px] font-bold uppercase">Rank</p><p id="my-lc-rank" class="text-lg font-black text-white">N/A</p></div>
+                        <div class="flex-1"><p class="text-slate-500 text-[10px] font-bold uppercase">Solved</p><p id="my-lc-total" class="text-lg font-black text-white">0</p></div>
                     </div>
-                    <div class="grid grid-cols-3 gap-3 text-center">
-                        <div class="bg-slate-900/80 p-3 rounded-xl border-b-2 border-green-500">
-                            <p class="text-slate-400 text-[10px] font-bold uppercase">Easy</p>
-                            <p id="my-lc-easy" class="text-xl font-black text-green-400">0</p>
-                        </div>
-                        <div class="bg-slate-900/80 p-3 rounded-xl border-b-2 border-yellow-500">
-                            <p class="text-slate-400 text-[10px] font-bold uppercase">Med</p>
-                            <p id="my-lc-med" class="text-xl font-black text-yellow-400">0</p>
-                        </div>
-                        <div class="bg-slate-900/80 p-3 rounded-xl border-b-2 border-red-500">
-                            <p class="text-slate-400 text-[10px] font-bold uppercase">Hard</p>
-                            <p id="my-lc-hard" class="text-xl font-black text-red-400">0</p>
-                        </div>
+                    <div class="grid grid-cols-3 gap-2 text-center">
+                        <div class="bg-slate-900/80 p-2 rounded-xl border-b-2 border-green-500"><p class="text-slate-400 text-[10px] font-bold uppercase">Easy</p><p id="my-lc-easy" class="font-black text-green-400">0</p></div>
+                        <div class="bg-slate-900/80 p-2 rounded-xl border-b-2 border-yellow-500"><p class="text-slate-400 text-[10px] font-bold uppercase">Med</p><p id="my-lc-med" class="font-black text-yellow-400">0</p></div>
+                        <div class="bg-slate-900/80 p-2 rounded-xl border-b-2 border-red-500"><p class="text-slate-400 text-[10px] font-bold uppercase">Hard</p><p id="my-lc-hard" class="font-black text-red-400">0</p></div>
                     </div>
                 </div>
+
+                <div id="my-cf-card" class="glass p-6 rounded-3xl hidden border-t-4 border-red-500 relative">
+                    <div class="flex items-center gap-4 mb-6">
+                       <div class="w-16 h-16 bg-red-500/10 rounded-2xl flex items-center justify-center border-2 border-red-500 shadow-inner"><span class="text-2xl font-black text-red-500">CF</span></div>
+                       <div class="flex-1">
+                           <h3 id="my-cf-name" class="font-bold text-xl text-white truncate max-w-[120px]">Loading...</h3>
+                           <button onclick="unlinkAccount('codeforces')" class="text-xs text-red-400 hover:text-red-300">Unlink CF</button>
+                       </div>
+                       <a id="my-cf-link" href="#" target="_blank" class="bg-red-500/20 text-red-500 p-2 rounded-xl hover:bg-red-500 hover:text-white transition text-[10px] font-bold">Profile ↗</a>
+                   </div>
+                    <div class="bg-slate-900/80 p-4 rounded-xl mb-4 flex justify-between text-center border border-white/5">
+                       <div class="flex-1 border-r border-white/10"><p class="text-slate-500 text-[10px] font-bold uppercase">Rating</p><p id="my-cf-rating" class="text-lg font-black text-white">0</p></div>
+                       <div class="flex-1"><p class="text-slate-500 text-[10px] font-bold uppercase">Rank</p><p id="my-cf-rank" class="text-md font-black text-white capitalize truncate">N/A</p></div>
+                   </div>
+                   <div class="bg-slate-900/80 p-3 rounded-xl text-center border border-white/5 border-b-2 border-red-500">
+                       <p class="text-slate-500 text-[10px] font-bold uppercase mb-1">Max Rating Achieved</p>
+                       <p id="my-cf-max" class="text-2xl font-black text-red-400">0</p>
+                   </div>
+               </div>
             </div>
 
-            <div id="link-buttons-area" class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div id="btn-link-gh" onclick="promptAdd('github')" class="glass p-10 rounded-3xl border-dashed border-2 border-white/10 flex flex-col items-center justify-center text-slate-500 cursor-pointer hover:border-blue-500 hover:text-blue-400 transition hover:scale-[1.02]">
-                    <span class="text-5xl mb-3 font-light">+</span>
-                    <p class="text-sm font-bold uppercase tracking-widest">Link GitHub Account</p>
+            <div id="link-buttons-area" class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div id="btn-link-gh" onclick="promptAdd('github')" class="glass p-8 rounded-3xl border-dashed border-2 border-white/10 flex flex-col items-center justify-center text-slate-500 cursor-pointer hover:border-blue-500 hover:text-blue-400 transition">
+                    <span class="text-4xl mb-2 font-light">+</span><p class="text-xs font-bold uppercase tracking-widest text-center">Link GitHub</p>
                 </div>
-                <div id="btn-link-lc" onclick="promptAdd('leetcode')" class="glass p-10 rounded-3xl border-dashed border-2 border-white/10 flex flex-col items-center justify-center text-slate-500 cursor-pointer hover:border-yellow-500 hover:text-yellow-400 transition hover:scale-[1.02]">
-                    <span class="text-5xl mb-3 font-light">+</span>
-                    <p class="text-sm font-bold uppercase tracking-widest">Link LeetCode Account</p>
+                <div id="btn-link-lc" onclick="promptAdd('leetcode')" class="glass p-8 rounded-3xl border-dashed border-2 border-white/10 flex flex-col items-center justify-center text-slate-500 cursor-pointer hover:border-yellow-500 hover:text-yellow-400 transition">
+                    <span class="text-4xl mb-2 font-light">+</span><p class="text-xs font-bold uppercase tracking-widest text-center">Link LeetCode</p>
+                </div>
+                <div id="btn-link-cf" onclick="promptAdd('codeforces')" class="glass p-8 rounded-3xl border-dashed border-2 border-white/10 flex flex-col items-center justify-center text-slate-500 cursor-pointer hover:border-red-500 hover:text-red-400 transition">
+                    <span class="text-4xl mb-2 font-light">+</span><p class="text-xs font-bold uppercase tracking-widest text-center">Link Codeforces</p>
                 </div>
             </div>
             
@@ -168,10 +176,22 @@
         </div>
 
         <div id="tab-pomo" class="hidden flex flex-col items-center pt-10 animate-in fade-in duration-500">
-            <h2 class="text-4xl font-extrabold mb-8 text-white">Pomodoro Clock</h2>
-            <div id="circle" class="timer-circle mb-8">
-                <span id="display" class="text-6xl font-black text-white">25:00</span>
+            <h2 class="text-4xl font-extrabold mb-4 text-white">Deep Work Engine</h2>
+            
+            <div class="glass p-6 rounded-3xl w-full max-w-md mb-8 text-center border border-white/10 shadow-lg">
+                <h3 class="text-slate-400 text-xs font-bold uppercase tracking-widest mb-3">Current Focus Goal</h3>
+                <div id="sugg-placeholder" class="text-slate-500 italic mb-4">Click below to generate an interview question</div>
+                
+                <div id="sugg-content" class="hidden mb-4">
+                    <h4 id="sugg-title" class="text-2xl font-black text-white mb-1">Problem Title</h4>
+                    <span id="sugg-diff" class="text-xs font-black uppercase bg-slate-900 px-3 py-1 rounded-full">Difficulty</span>
+                    <a id="sugg-btn" href="#" target="_blank" class="mt-4 block bg-yellow-500/20 text-yellow-500 border border-yellow-500/50 px-4 py-2 rounded-xl font-bold text-sm hover:bg-yellow-500 hover:text-black transition">Solve on LeetCode ↗</a>
+                </div>
+                
+                <button onclick="suggestProblem()" class="bg-slate-800 hover:bg-slate-700 text-white px-6 py-2 rounded-xl text-sm font-bold transition shadow-md">Generate Problem</button>
             </div>
+
+            <div id="circle" class="timer-circle mb-8"><span id="display" class="text-6xl font-black text-white">25:00</span></div>
             <div class="flex flex-wrap gap-4 mb-10 justify-center max-w-md">
                 <button onclick="setTime(25)" class="glass px-6 py-2 rounded-full text-sm font-bold hover:border-blue-500 transition">25m</button>
                 <button onclick="setTime(45)" class="glass px-6 py-2 rounded-full text-sm font-bold hover:border-blue-500 transition">45m</button>
@@ -180,19 +200,20 @@
                     <button onclick="setCustom()" class="bg-blue-600 px-4 py-2 text-sm font-bold hover:bg-blue-500">Set</button>
                 </div>
             </div>
-            <button id="main-btn" onclick="toggleTimer()" class="w-full max-w-md py-4 bg-blue-600 rounded-2xl font-black text-xl hover:bg-blue-500 hover:scale-[1.02] transition-all shadow-lg shadow-blue-600/20">START FOCUS</button>
+            <button id="main-btn" onclick="toggleTimer()" class="w-full max-w-md py-4 bg-blue-600 rounded-2xl font-black text-xl hover:bg-blue-500 transition-all shadow-lg shadow-blue-600/20">START FOCUS</button>
         </div>
 
         <div id="tab-compare" class="hidden animate-in fade-in duration-500">
             <header class="text-center pt-4 mb-8">
                 <h2 class="text-4xl font-extrabold text-white">Developer Battle</h2>
-                <p class="text-slate-400 mt-2">Compare Stats Head-to-Head</p>
+                <p class="text-slate-400 mt-2">Who has the highest overall stats?</p>
             </header>
             
             <div class="flex justify-center mb-6">
                 <select id="compare-type" class="glass text-white rounded-xl px-6 py-3 outline-none font-bold focus:border-purple-500">
-                    <option value="github">Battle via GitHub Stats</option>
-                    <option value="leetcode">Battle via LeetCode Stats</option>
+                    <option class="bg-slate-900 text-white" value="github">Battle via GitHub</option>
+                    <option class="bg-slate-900 text-white" value="leetcode">Battle via LeetCode</option>
+                    <option class="bg-slate-900 text-white" value="codeforces">Battle via Codeforces</option>
                 </select>
             </div>
 
@@ -202,51 +223,63 @@
                 <input id="user2" type="text" placeholder="Username 2" class="glass px-4 py-3 rounded-xl text-center w-full md:w-64 focus:border-purple-500 outline-none">
             </div>
             <div class="text-center mb-8">
-                <button onclick="compareUsers()" class="bg-purple-600 hover:bg-purple-500 px-10 py-4 rounded-2xl font-black text-lg transition shadow-lg shadow-purple-600/20 hover:scale-105">COMPARE NOW</button>
+                <button onclick="compareUsers()" class="bg-purple-600 hover:bg-purple-500 px-10 py-4 rounded-2xl font-black text-lg transition shadow-lg shadow-purple-600/20 hover:scale-105">COMMENCE BATTLE</button>
             </div>
 
-            <div id="compare-results" class="grid grid-cols-1 md:grid-cols-2 gap-8 hidden max-w-4xl mx-auto">
-                <div id="c1-card" class="glass p-6 rounded-3xl border-t-4 border-blue-500 text-center shadow-lg"></div>
-                <div id="c2-card" class="glass p-6 rounded-3xl border-t-4 border-purple-500 text-center shadow-lg"></div>
+            <div id="compare-results" class="grid grid-cols-1 md:grid-cols-2 gap-8 hidden max-w-4xl mx-auto mt-10">
+                <div id="c1-card" class="glass p-6 rounded-3xl text-center shadow-lg relative"></div>
+                <div id="c2-card" class="glass p-6 rounded-3xl text-center shadow-lg relative"></div>
             </div>
         </div>
 
     </main>
 
     <nav class="fixed bottom-0 left-0 right-0 p-4 glass border-t border-white/5 flex justify-around md:hidden z-50">
-        <button onclick="showTab('dash')" class="flex flex-col items-center gap-1">
-            <span class="text-xs font-bold uppercase tracking-widest text-white">Stats</span>
-        </button>
-        <button onclick="showTab('pomo')" class="flex flex-col items-center gap-1 text-slate-400">
-            <span class="text-xs font-bold uppercase tracking-widest">Pomodoro</span>
-        </button>
-        <button onclick="showTab('compare')" class="flex flex-col items-center gap-1 text-purple-400">
-            <span class="text-xs font-bold uppercase tracking-widest">Compare</span>
-        </button>
+        <button onclick="showTab('dash')" class="flex flex-col items-center gap-1"><span class="text-[10px] font-bold uppercase tracking-widest text-white">Stats</span></button>
+        <button onclick="showTab('pomo')" class="flex flex-col items-center gap-1 text-slate-400"><span class="text-[10px] font-bold uppercase tracking-widest">Pomodoro</span></button>
+        <button onclick="showTab('compare')" class="flex flex-col items-center gap-1 text-purple-400"><span class="text-[10px] font-bold uppercase tracking-widest">Compare</span></button>
     </nav>
 
     <script>
-        // API Endpoint for LeetCode
         const LC_API = 'https://leetcode-api-faisalshohag.vercel.app/';
 
-        // --- On Load: Check Linked Accounts ---
+        // BLIND 75 DATABASE 
+        const blind75 = [
+            { t: "Two Sum", d: "Easy", l: "two-sum", c: "text-green-400" },
+            { t: "Best Time to Buy & Sell Stock", d: "Easy", l: "best-time-to-buy-and-sell-stock", c: "text-green-400" },
+            { t: "Contains Duplicate", d: "Easy", l: "contains-duplicate", c: "text-green-400" },
+            { t: "Valid Anagram", d: "Easy", l: "valid-anagram", c: "text-green-400" },
+            { t: "Product of Array Except Self", d: "Medium", l: "product-of-array-except-self", c: "text-yellow-400" },
+            { t: "Maximum Subarray", d: "Medium", l: "maximum-subarray", c: "text-yellow-400" },
+            { t: "3Sum", d: "Medium", l: "3sum", c: "text-yellow-400" },
+            { t: "Container With Most Water", d: "Medium", l: "container-with-most-water", c: "text-yellow-400" },
+            { t: "Merge Intervals", d: "Medium", l: "merge-intervals", c: "text-yellow-400" },
+            { t: "Merge K Sorted Lists", d: "Hard", l: "merge-k-sorted-lists", c: "text-red-400" },
+            { t: "Minimum Window Substring", d: "Hard", l: "minimum-window-substring", c: "text-red-400" },
+            { t: "Reverse Linked List", d: "Easy", l: "reverse-linked-list", c: "text-green-400" },
+            { t: "Longest Repeating Character Replacement", d: "Medium", l: "longest-repeating-character-replacement", c: "text-yellow-400" }
+        ];
+
+        function suggestProblem() {
+            const q = blind75[Math.floor(Math.random() * blind75.length)];
+            document.getElementById('sugg-placeholder').classList.add('hidden');
+            document.getElementById('sugg-content').classList.remove('hidden');
+            document.getElementById('sugg-title').innerText = q.t;
+            document.getElementById('sugg-diff').innerText = q.d;
+            document.getElementById('sugg-diff').className = `text-xs font-black uppercase px-3 py-1 rounded-full bg-slate-900 ${q.c}`;
+            document.getElementById('sugg-btn').href = `https://leetcode.com/problems/${q.l}/`;
+        }
+
         window.onload = async () => {
             const savedGH = localStorage.getItem('my-github');
             const savedLC = localStorage.getItem('my-leetcode');
+            const savedCF = localStorage.getItem('my-codeforces');
             
-            if(savedGH) {
-                document.getElementById('btn-link-gh').classList.add('hidden');
-                document.getElementById('my-gh-card').classList.remove('hidden');
-                fetchGHProfile(savedGH, 'my-gh');
-            }
-            if(savedLC) {
-                document.getElementById('btn-link-lc').classList.add('hidden');
-                document.getElementById('my-lc-card').classList.remove('hidden');
-                fetchLCProfile(savedLC, 'my-lc');
-            }
+            if(savedGH) { document.getElementById('btn-link-gh').classList.add('hidden'); document.getElementById('my-gh-card').classList.remove('hidden'); fetchGHProfile(savedGH, 'my-gh'); }
+            if(savedLC) { document.getElementById('btn-link-lc').classList.add('hidden'); document.getElementById('my-lc-card').classList.remove('hidden'); fetchLCProfile(savedLC, 'my-lc'); }
+            if(savedCF) { document.getElementById('btn-link-cf').classList.add('hidden'); document.getElementById('my-cf-card').classList.remove('hidden'); fetchCFProfile(savedCF, 'my-cf'); }
         }
 
-        // --- Fetch Helpers for Dashboard ---
         async function fetchGHProfile(username, prefix) {
             try {
                 const res = await fetch(`https://api.github.com/users/${username}`);
@@ -257,12 +290,8 @@
                     document.getElementById(`${prefix}-repos`).innerText = data.public_repos;
                     document.getElementById(`${prefix}-followers`).innerText = data.followers;
                     document.getElementById(`${prefix}-link`).href = data.html_url;
-                    if(document.getElementById(`${prefix}-chart`)) {
-                        document.getElementById(`${prefix}-chart`).src = `https://ghchart.rshah.org/${username}`;
-                    }
-                } else {
-                    document.getElementById(`${prefix}-name`).innerText = "User Not Found";
-                }
+                    if(document.getElementById(`${prefix}-chart`)) document.getElementById(`${prefix}-chart`).src = `https://ghchart.rshah.org/${username}`;
+                } else { document.getElementById(`${prefix}-name`).innerText = "Not Found"; }
             } catch(e) { console.error(e); }
         }
 
@@ -270,9 +299,7 @@
             try {
                 const res = await fetch(`${LC_API}${username}`);
                 const data = await res.json();
-                
                 if(data.errors) throw new Error("Not Found");
-
                 document.getElementById(`${prefix}-name`).innerText = username;
                 document.getElementById(`${prefix}-rank`).innerText = data.ranking || 'N/A';
                 document.getElementById(`${prefix}-total`).innerText = data.totalSolved || 0;
@@ -280,35 +307,37 @@
                 document.getElementById(`${prefix}-med`).innerText = data.mediumSolved || 0;
                 document.getElementById(`${prefix}-hard`).innerText = data.hardSolved || 0;
                 document.getElementById(`${prefix}-link`).href = `https://leetcode.com/u/${username}/`;
-            } catch(e) { 
-                document.getElementById(`${prefix}-name`).innerText = "User Not Found";
-            }
+            } catch(e) { document.getElementById(`${prefix}-name`).innerText = "Not Found"; }
         }
 
-        // --- Tab Switching ---
+        async function fetchCFProfile(username, prefix) {
+            try {
+                const res = await fetch(`https://codeforces.com/api/user.info?handles=${username}`);
+                const data = await res.json();
+                if(data.status === "OK") {
+                    const user = data.result[0];
+                    document.getElementById(`${prefix}-name`).innerText = user.handle;
+                    document.getElementById(`${prefix}-rating`).innerText = user.rating || 0;
+                    document.getElementById(`${prefix}-rank`).innerText = user.rank || 'Unrated';
+                    document.getElementById(`${prefix}-max`).innerText = user.maxRating || 0;
+                    document.getElementById(`${prefix}-link`).href = `https://codeforces.com/profile/${user.handle}`;
+                } else { throw new Error("Not Found"); }
+            } catch(e) { document.getElementById(`${prefix}-name`).innerText = "Not Found"; }
+        }
+
         function showTab(tab) {
-            ['dash', 'pomo', 'compare'].forEach(t => {
-                document.getElementById('tab-'+t).classList.add('hidden');
-                document.getElementById('btn-'+t)?.classList.remove('bg-white/10');
-            });
-            document.getElementById('tab-'+tab).classList.remove('hidden');
-            document.getElementById('btn-'+tab)?.classList.add('bg-white/10');
+            ['dash', 'pomo', 'compare'].forEach(t => { document.getElementById('tab-'+t).classList.add('hidden'); document.getElementById('btn-'+t)?.classList.remove('bg-white/10'); });
+            document.getElementById('tab-'+tab).classList.remove('hidden'); document.getElementById('btn-'+tab)?.classList.add('bg-white/10');
         }
 
-        // --- Linking Logic ---
-        function promptAdd(type) {
-            const user = prompt(`Enter your ${type} username:`);
-            if(user) { localStorage.setItem(`my-${type}`, user.trim()); location.reload(); }
-        }
+        function promptAdd(type) { const user = prompt(`Enter your ${type} username:`); if(user) { localStorage.setItem(`my-${type}`, user.trim()); location.reload(); } }
         function unlinkAccount(type) { localStorage.removeItem(`my-${type}`); location.reload(); }
 
-        // --- SAFE Global Search Logic ---
         async function handleSearch() {
             const user = document.getElementById('global-search').value.trim();
             const type = document.getElementById('search-type').value;
             const card = document.getElementById('result-card');
             const content = document.getElementById('result-content');
-            
             if(!user) return;
             
             card.classList.remove('hidden');
@@ -321,123 +350,103 @@
                     const data = await res.json();
                     if(data.login) {
                         card.classList.replace('border-slate-500', 'border-blue-500');
-                        content.innerHTML = `
-                            <div class="flex items-center gap-6 mb-6">
-                                <img src="${data.avatar_url}" class="w-20 h-20 rounded-2xl border-2 border-blue-500 shadow-lg">
-                                <div class="flex-1">
-                                    <h3 class="font-bold text-2xl">${data.name || data.login}</h3>
-                                    <p class="text-sm text-blue-400 font-bold">@${data.login}</p>
-                                </div>
-                                <a href="${data.html_url}" target="_blank" class="bg-blue-600 px-4 py-2 rounded-xl font-bold text-sm hover:bg-blue-500 transition">View on GitHub</a>
-                            </div>
-                            <div class="grid grid-cols-3 gap-4 text-center">
-                                <div class="bg-slate-900/80 p-4 rounded-xl border border-white/5"><p class="text-slate-500 text-xs font-bold uppercase mb-1">Repos</p><p class="text-2xl font-black">${data.public_repos}</p></div>
-                                <div class="bg-slate-900/80 p-4 rounded-xl border border-white/5"><p class="text-slate-500 text-xs font-bold uppercase mb-1">Followers</p><p class="text-2xl font-black">${data.followers}</p></div>
-                                <div class="bg-slate-900/80 p-4 rounded-xl border border-white/5"><p class="text-slate-500 text-xs font-bold uppercase mb-1">Following</p><p class="text-2xl font-black">${data.following}</p></div>
-                            </div>
-                        `;
-                    } else { throw new Error("Not found"); }
-                } else {
+                        content.innerHTML = `<div class="flex items-center gap-6 mb-6"><img src="${data.avatar_url}" class="w-20 h-20 rounded-2xl border-2 border-blue-500 shadow-lg"><div class="flex-1"><h3 class="font-bold text-2xl">${data.name || data.login}</h3><p class="text-sm text-blue-400 font-bold">@${data.login}</p></div><a href="${data.html_url}" target="_blank" class="bg-blue-600 px-4 py-2 rounded-xl font-bold text-sm hover:bg-blue-500 transition">View on GitHub</a></div><div class="grid grid-cols-3 gap-4 text-center"><div class="bg-slate-900/80 p-4 rounded-xl border border-white/5"><p class="text-slate-500 text-xs font-bold uppercase mb-1">Repos</p><p class="text-2xl font-black">${data.public_repos}</p></div><div class="bg-slate-900/80 p-4 rounded-xl border border-white/5"><p class="text-slate-500 text-xs font-bold uppercase mb-1">Followers</p><p class="text-2xl font-black">${data.followers}</p></div><div class="bg-slate-900/80 p-4 rounded-xl border border-white/5"><p class="text-slate-500 text-xs font-bold uppercase mb-1">Following</p><p class="text-2xl font-black">${data.following}</p></div></div>`;
+                    } else throw new Error();
+                } else if(type === 'leetcode') {
                     const res = await fetch(`${LC_API}${user}`);
                     const data = await res.json();
                     if(!data.errors) {
                         card.classList.replace('border-slate-500', 'border-yellow-500');
-                        content.innerHTML = `
-                            <div class="flex items-center gap-6 mb-6">
-                                <div class="w-20 h-20 bg-yellow-500/10 rounded-2xl flex items-center justify-center border-2 border-yellow-500"><span class="text-4xl">🚀</span></div>
-                                <div class="flex-1">
-                                    <h3 class="font-bold text-2xl">${user}</h3>
-                                    <p class="text-sm text-yellow-500 font-bold uppercase">LeetCode Profile</p>
-                                </div>
-                                <a href="https://leetcode.com/u/${user}/" target="_blank" class="bg-yellow-500 text-black px-4 py-2 rounded-xl font-bold text-sm hover:bg-yellow-400 transition">View on LeetCode</a>
-                            </div>
-                            <div class="grid grid-cols-2 gap-4 text-center mb-4">
-                                <div class="bg-slate-900/80 p-4 rounded-xl border border-white/5"><p class="text-slate-500 text-xs font-bold uppercase mb-1">Global Ranking</p><p class="text-2xl font-black">${data.ranking}</p></div>
-                                <div class="bg-slate-900/80 p-4 rounded-xl border border-white/5"><p class="text-slate-500 text-xs font-bold uppercase mb-1">Total Solved</p><p class="text-2xl font-black">${data.totalSolved}</p></div>
-                            </div>
-                            <div class="grid grid-cols-3 gap-2 text-center">
-                                <div class="bg-slate-900/80 p-3 rounded-xl border-b-4 border-green-500"><p class="text-slate-400 text-[10px] font-bold uppercase">Easy</p><p class="text-xl font-black text-green-400">${data.easySolved}</p></div>
-                                <div class="bg-slate-900/80 p-3 rounded-xl border-b-4 border-yellow-500"><p class="text-slate-400 text-[10px] font-bold uppercase">Medium</p><p class="text-xl font-black text-yellow-400">${data.mediumSolved}</p></div>
-                                <div class="bg-slate-900/80 p-3 rounded-xl border-b-4 border-red-500"><p class="text-slate-400 text-[10px] font-bold uppercase">Hard</p><p class="text-xl font-black text-red-400">${data.hardSolved}</p></div>
-                            </div>
-                        `;
-                    } else { throw new Error("Not found"); }
+                        content.innerHTML = `<div class="flex items-center gap-6 mb-6"><div class="w-20 h-20 bg-yellow-500/10 rounded-2xl flex items-center justify-center border-2 border-yellow-500"><span class="text-4xl">🚀</span></div><div class="flex-1"><h3 class="font-bold text-2xl">${user}</h3><p class="text-sm text-yellow-500 font-bold uppercase">LeetCode Profile</p></div><a href="https://leetcode.com/u/${user}/" target="_blank" class="bg-yellow-500 text-black px-4 py-2 rounded-xl font-bold text-sm hover:bg-yellow-400 transition">View on LeetCode</a></div><div class="grid grid-cols-2 gap-4 text-center mb-4"><div class="bg-slate-900/80 p-4 rounded-xl border border-white/5"><p class="text-slate-500 text-xs font-bold uppercase mb-1">Global Ranking</p><p class="text-2xl font-black">${data.ranking}</p></div><div class="bg-slate-900/80 p-4 rounded-xl border border-white/5"><p class="text-slate-500 text-xs font-bold uppercase mb-1">Total Solved</p><p class="text-2xl font-black">${data.totalSolved}</p></div></div><div class="grid grid-cols-3 gap-2 text-center"><div class="bg-slate-900/80 p-3 rounded-xl border-b-4 border-green-500"><p class="text-slate-400 text-[10px] font-bold uppercase">Easy</p><p class="text-xl font-black text-green-400">${data.easySolved}</p></div><div class="bg-slate-900/80 p-3 rounded-xl border-b-4 border-yellow-500"><p class="text-slate-400 text-[10px] font-bold uppercase">Medium</p><p class="text-xl font-black text-yellow-400">${data.mediumSolved}</p></div><div class="bg-slate-900/80 p-3 rounded-xl border-b-4 border-red-500"><p class="text-slate-400 text-[10px] font-bold uppercase">Hard</p><p class="text-xl font-black text-red-400">${data.hardSolved}</p></div></div>`;
+                    } else throw new Error();
+                } else {
+                    const res = await fetch(`https://codeforces.com/api/user.info?handles=${user}`);
+                    const data = await res.json();
+                    if(data.status === "OK") {
+                        const cfUser = data.result[0];
+                        card.classList.replace('border-slate-500', 'border-red-500');
+                        content.innerHTML = `<div class="flex items-center gap-6 mb-6"><div class="w-20 h-20 bg-red-500/10 rounded-2xl flex items-center justify-center border-2 border-red-500"><span class="text-4xl font-black text-red-500">CF</span></div><div class="flex-1"><h3 class="font-bold text-2xl">${cfUser.handle}</h3><p class="text-sm text-red-400 font-bold uppercase capitalize">${cfUser.rank || 'Unrated'}</p></div><a href="https://codeforces.com/profile/${cfUser.handle}" target="_blank" class="bg-red-600 px-4 py-2 rounded-xl font-bold text-sm hover:bg-red-500 transition">View on Codeforces</a></div><div class="grid grid-cols-2 gap-4 text-center"><div class="bg-slate-900/80 p-4 rounded-xl border border-white/5"><p class="text-slate-500 text-xs font-bold uppercase mb-1">Current Rating</p><p class="text-2xl font-black">${cfUser.rating || 0}</p></div><div class="bg-slate-900/80 p-4 rounded-xl border border-white/5"><p class="text-slate-500 text-xs font-bold uppercase mb-1">Max Rating</p><p class="text-2xl font-black text-red-400">${cfUser.maxRating || 0}</p></div></div>`;
+                    } else throw new Error();
                 }
-            } catch(e) {
-                 card.classList.replace('border-slate-500', 'border-red-500');
-                 content.innerHTML = `<p class='text-red-400 text-center py-4 font-bold'>Error: User "${user}" not found.</p>`;
-            }
+            } catch(e) { card.classList.replace('border-slate-500', 'border-red-500'); content.innerHTML = `<p class='text-red-400 text-center py-4 font-bold'>Error: User "${user}" not found.</p>`; }
         }
         function closeResult() { document.getElementById('result-card').classList.add('hidden'); }
 
-        // --- SAFE Compare Users Logic ---
         async function compareUsers() {
             const type = document.getElementById('compare-type').value;
             const u1 = document.getElementById('user1').value.trim();
             const u2 = document.getElementById('user2').value.trim();
-            if(!u1 || !u2) return alert("Enter both usernames to start the battle!");
+            if(!u1 || !u2) return alert("Enter both usernames!");
 
             document.getElementById('compare-results').classList.remove('hidden');
-            const c1 = document.getElementById('c1-card');
-            const c2 = document.getElementById('c2-card');
-            
-            c1.innerHTML = `<p class="animate-pulse py-10">Fetching ${u1}...</p>`;
-            c2.innerHTML = `<p class="animate-pulse py-10">Fetching ${u2}...</p>`;
+            const c1 = document.getElementById('c1-card'); const c2 = document.getElementById('c2-card');
+            c1.innerHTML = `<p class="animate-pulse py-10">Fetching ${u1}...</p>`; c2.innerHTML = `<p class="animate-pulse py-10">Fetching ${u2}...</p>`;
 
-            if(type === 'github') {
-                c1.className = "glass p-6 rounded-3xl border-t-8 border-blue-500 text-center shadow-lg";
-                c2.className = "glass p-6 rounded-3xl border-t-8 border-purple-500 text-center shadow-lg";
-                
-                const fetchGH = async (u, target) => {
-                    try {
-                        const res = await fetch(`https://api.github.com/users/${u}`);
-                        const data = await res.json();
-                        if(data.login) {
-                            target.innerHTML = `
-                                <img src="${data.avatar_url}" class="w-24 h-24 rounded-full mx-auto mb-4 border-4 border-slate-800 shadow-xl">
-                                <h3 class="text-2xl font-bold mb-6">${data.login}</h3>
-                                <div class="flex justify-between bg-slate-900/80 p-4 rounded-xl mb-3 border border-white/5"><span class="text-slate-400 font-bold text-sm">Public Repos</span><span class="font-black text-white text-lg">${data.public_repos}</span></div>
-                                <div class="flex justify-between bg-slate-900/80 p-4 rounded-xl mb-3 border border-white/5"><span class="text-slate-400 font-bold text-sm">Followers</span><span class="font-black text-white text-lg">${data.followers}</span></div>
-                                <div class="flex justify-between bg-slate-900/80 p-4 rounded-xl mb-3 border border-white/5"><span class="text-slate-400 font-bold text-sm">Following</span><span class="font-black text-white text-lg">${data.following}</span></div>
-                                <div class="flex justify-between bg-slate-900/80 p-4 rounded-xl border border-white/5"><span class="text-slate-400 font-bold text-sm">Public Gists</span><span class="font-black text-white text-lg">${data.public_gists}</span></div>
-                            `;
-                        } else { throw new Error("Not found"); }
-                    } catch(e) { target.innerHTML = `<p class="py-10 text-red-400">User ${u} not found.</p>`; }
-                };
-                fetchGH(u1, c1); fetchGH(u2, c2);
-            } else {
-                c1.className = "glass p-6 rounded-3xl border-t-8 border-yellow-500 text-center shadow-lg";
-                c2.className = "glass p-6 rounded-3xl border-t-8 border-orange-500 text-center shadow-lg";
-                
-                const fetchLC = async (u, target) => {
-                    try {
-                        const res = await fetch(`${LC_API}${u}`);
-                        const data = await res.json();
-                        if(!data.errors) {
-                            target.innerHTML = `
-                                <div class="w-24 h-24 bg-yellow-500/10 rounded-full mx-auto mb-4 flex items-center justify-center border-4 border-slate-800 text-4xl shadow-xl">🚀</div>
-                                <h3 class="text-2xl font-bold mb-6">${u}</h3>
-                                <div class="flex justify-between bg-slate-900/80 p-4 rounded-xl mb-3 border border-white/5"><span class="text-slate-400 font-bold text-sm">Global Ranking</span><span class="font-black text-white text-lg">${data.ranking}</span></div>
-                                <div class="flex justify-between bg-slate-900/80 p-4 rounded-xl mb-3 border border-white/5"><span class="text-slate-400 font-bold text-sm">Total Solved</span><span class="font-black text-white text-lg">${data.totalSolved}</span></div>
-                                <div class="flex justify-between bg-slate-900/80 p-4 rounded-xl mb-3 border border-white/5"><span class="text-green-400 font-bold text-sm">Easy</span><span class="font-black text-white text-lg">${data.easySolved}</span></div>
-                                <div class="flex justify-between bg-slate-900/80 p-4 rounded-xl mb-3 border border-white/5"><span class="text-yellow-400 font-bold text-sm">Medium</span><span class="font-black text-white text-lg">${data.mediumSolved}</span></div>
-                                <div class="flex justify-between bg-slate-900/80 p-4 rounded-xl border border-white/5"><span class="text-red-400 font-bold text-sm">Hard</span><span class="font-black text-white text-lg">${data.hardSolved}</span></div>
-                            `;
-                        } else { throw new Error("Not found"); }
-                    } catch(e) { target.innerHTML = `<p class="py-10 text-red-400">User ${u} not found.</p>`; }
-                };
-                fetchLC(u1, c1); fetchLC(u2, c2);
+            try {
+                if(type === 'github') {
+                    c1.className = "glass p-6 rounded-3xl border-t-8 border-blue-500 text-center shadow-lg relative mt-4"; 
+                    c2.className = "glass p-6 rounded-3xl border-t-8 border-purple-500 text-center shadow-lg relative mt-4";
+                    
+                    const [res1, res2] = await Promise.all([fetch(`https://api.github.com/users/${u1}`), fetch(`https://api.github.com/users/${u2}`)]);
+                    const d1 = await res1.json(); const d2 = await res2.json();
+                    
+                    if(!d1.login || !d2.login) throw new Error();
+                    
+                    const score1 = (d1.followers * 10) + (d1.public_repos * 5);
+                    const score2 = (d2.followers * 10) + (d2.public_repos * 5);
+                    
+                    const renderGH = (d, s, w) => `${w ? '<div class="absolute -top-5 left-1/2 transform -translate-x-1/2 bg-yellow-500 text-black px-4 py-1 rounded-full font-black text-sm shadow-xl">👑 WINNER</div>' : ''}<img src="${d.avatar_url}" class="w-24 h-24 rounded-full mx-auto mb-2 border-4 border-slate-800 shadow-xl mt-2"><h3 class="text-2xl font-bold mb-1">${d.login}</h3><p class="text-blue-400 font-black mb-4 tracking-widest uppercase text-xs">Score: ${s}</p><div class="flex justify-between bg-slate-900/80 p-3 rounded-xl mb-2 border border-white/5"><span class="text-slate-400 font-bold text-xs">Repos</span><span class="font-black text-white">${d.public_repos}</span></div><div class="flex justify-between bg-slate-900/80 p-3 rounded-xl mb-2 border border-white/5"><span class="text-slate-400 font-bold text-xs">Followers</span><span class="font-black text-white">${d.followers}</span></div><div class="flex justify-between bg-slate-900/80 p-3 rounded-xl border border-white/5"><span class="text-slate-400 font-bold text-xs">Following</span><span class="font-black text-white">${d.following}</span></div>`;
+                    
+                    c1.innerHTML = renderGH(d1, score1, score1 > score2);
+                    c2.innerHTML = renderGH(d2, score2, score2 > score1);
+
+                } else if(type === 'leetcode') {
+                    c1.className = "glass p-6 rounded-3xl border-t-8 border-yellow-500 text-center shadow-lg relative mt-4"; 
+                    c2.className = "glass p-6 rounded-3xl border-t-8 border-orange-500 text-center shadow-lg relative mt-4";
+                    
+                    const [res1, res2] = await Promise.all([fetch(`${LC_API}${u1}`), fetch(`${LC_API}${u2}`)]);
+                    const d1 = await res1.json(); const d2 = await res2.json();
+                    
+                    if(d1.errors || d2.errors) throw new Error();
+                    
+                    const score1 = (d1.hardSolved * 3) + (d1.mediumSolved * 2) + (d1.easySolved * 1);
+                    const score2 = (d2.hardSolved * 3) + (d2.mediumSolved * 2) + (d2.easySolved * 1);
+                    
+                    const renderLC = (d, u, s, w) => `${w ? '<div class="absolute -top-5 left-1/2 transform -translate-x-1/2 bg-yellow-500 text-black px-4 py-1 rounded-full font-black text-sm shadow-xl">👑 WINNER</div>' : ''}<div class="w-20 h-20 bg-yellow-500/10 rounded-full mx-auto mb-2 flex items-center justify-center border-4 border-slate-800 text-3xl shadow-xl mt-2">🚀</div><h3 class="text-2xl font-bold mb-1">${u}</h3><p class="text-yellow-500 font-black mb-4 tracking-widest uppercase text-xs">Score: ${s}</p><div class="grid grid-cols-2 gap-2 mb-2"><div class="bg-slate-900/80 p-2 rounded-xl border border-white/5"><span class="block text-slate-400 text-[10px] font-bold uppercase">Rank</span><span class="font-black text-white text-sm">${d.ranking}</span></div><div class="bg-slate-900/80 p-2 rounded-xl border border-white/5"><span class="block text-slate-400 text-[10px] font-bold uppercase">Total</span><span class="font-black text-white text-sm">${d.totalSolved}</span></div></div><div class="flex justify-between bg-slate-900/80 p-2 rounded-xl mb-2 border border-white/5"><span class="text-green-400 font-bold text-xs">Easy</span><span class="font-black text-white">${d.easySolved}</span></div><div class="flex justify-between bg-slate-900/80 p-2 rounded-xl mb-2 border border-white/5"><span class="text-yellow-400 font-bold text-xs">Med</span><span class="font-black text-white">${d.mediumSolved}</span></div><div class="flex justify-between bg-slate-900/80 p-2 rounded-xl border border-white/5"><span class="text-red-400 font-bold text-xs">Hard</span><span class="font-black text-white">${d.hardSolved}</span></div>`;
+                    
+                    c1.innerHTML = renderLC(d1, u1, score1, score1 > score2);
+                    c2.innerHTML = renderLC(d2, u2, score2, score2 > score1);
+
+                } else {
+                    c1.className = "glass p-6 rounded-3xl border-t-8 border-red-500 text-center shadow-lg relative mt-4"; 
+                    c2.className = "glass p-6 rounded-3xl border-t-8 border-pink-500 text-center shadow-lg relative mt-4";
+                    
+                    const [res1, res2] = await Promise.all([fetch(`https://codeforces.com/api/user.info?handles=${u1}`), fetch(`https://codeforces.com/api/user.info?handles=${u2}`)]);
+                    const d1 = await res1.json(); const d2 = await res2.json();
+                    
+                    if(d1.status !== "OK" || d2.status !== "OK") throw new Error();
+                    
+                    const uData1 = d1.result[0]; const uData2 = d2.result[0];
+                    const score1 = uData1.rating || 0;
+                    const score2 = uData2.rating || 0;
+                    
+                    const renderCF = (d, s, w) => `${w ? '<div class="absolute -top-5 left-1/2 transform -translate-x-1/2 bg-yellow-500 text-black px-4 py-1 rounded-full font-black text-sm shadow-xl">👑 WINNER</div>' : ''}<div class="w-20 h-20 bg-red-500/10 rounded-full mx-auto mb-2 flex items-center justify-center border-4 border-slate-800 text-3xl shadow-xl font-black text-red-500 mt-2">CF</div><h3 class="text-2xl font-bold mb-1">${d.handle}</h3><p class="text-red-400 font-black mb-4 tracking-widest uppercase text-xs">Score: ${s}</p><div class="flex justify-between bg-slate-900/80 p-3 rounded-xl mb-2 border border-white/5"><span class="text-slate-400 font-bold text-xs">Current Rating</span><span class="font-black text-white">${d.rating || 0}</span></div><div class="flex justify-between bg-slate-900/80 p-3 rounded-xl border border-white/5"><span class="text-slate-400 font-bold text-xs">Max Rating</span><span class="font-black text-red-400">${d.maxRating || 0}</span></div>`;
+                    
+                    c1.innerHTML = renderCF(uData1, score1, score1 > score2);
+                    c2.innerHTML = renderCF(uData2, score2, score2 > score1);
+                }
+            } catch(e) {
+                c1.innerHTML = `<p class="py-10 text-red-400 font-bold">User missing or Error.</p>`;
+                c2.innerHTML = `<p class="py-10 text-red-400 font-bold">User missing or Error.</p>`;
             }
         }
 
-        // --- Pomodoro Timer Logic ---
         let sec = 1500; let t = null;
         function setTime(m) { sec = m*60; update(); }
         function setCustom() { const val = document.getElementById('custom-min').value; if(val && val > 0) { setTime(val); } }
         function update() { const m = Math.floor(sec/60); const s = sec%60; document.getElementById('display').innerText = `${m}:${s<10?'0':''}${s}`; }
         function toggleTimer() {
-            const btn = document.getElementById('main-btn');
-            const circle = document.getElementById('circle');
+            const btn = document.getElementById('main-btn'); const circle = document.getElementById('circle');
             if(t) { clearInterval(t); t=null; btn.innerText="START FOCUS"; circle.classList.remove('active'); } 
             else { t=setInterval(()=>{sec--; update(); if(sec<=0)clearInterval(t)},1000); btn.innerText="PAUSE"; circle.classList.add('active'); }
         }
