@@ -11,112 +11,127 @@
         .glass { background: rgba(30, 41, 59, 0.4); backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,0.05); }
         .timer-circle { width: 260px; height: 260px; border-radius: 50%; border: 6px solid #1e293b; display: flex; align-items: center; justify-content: center; position: relative; transition: all 0.5s; }
         .timer-circle.active { border-color: #3b82f6; box-shadow: 0 0 30px rgba(59, 130, 246, 0.3); }
-        /* Mobile Scrollbar Hide */
         ::-webkit-scrollbar { display: none; }
     </style>
 </head>
 <body class="min-h-screen pb-24 md:pb-0">
 
+    <nav class="p-6 flex justify-between items-center max-w-5xl mx-auto">
+        <h1 class="text-2xl font-800 tracking-tighter text-white">DEV<span class="text-blue-500">HAWK</span></h1>
+        
+        <div class="glass px-2 py-1 rounded-2xl hidden md:flex gap-1">
+            <button onclick="showTab('dash')" class="px-6 py-2 rounded-xl text-sm font-bold transition-all bg-white/10 hover:bg-white/20">Dashboard</button>
+            <button onclick="showTab('focus')" class="px-6 py-2 rounded-xl text-sm font-bold transition-all hover:bg-white/20">Focus Mode</button>
+        </div>
+    </nav>
+
     <div class="sticky top-0 z-50 p-4 glass border-b border-white/5 mb-4">
         <div class="max-w-xl mx-auto flex gap-2">
-            <input id="global-search" type="text" placeholder="Search any developer..." class="bg-slate-900/50 border border-white/10 rounded-xl flex-1 px-4 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
-            <button onclick="handleSearch()" class="bg-blue-600 px-4 py-2 rounded-xl text-sm font-bold">Search</button>
+            <input id="global-search" type="text" placeholder="Search any developer's GitHub..." class="bg-slate-900/50 border border-white/10 rounded-xl flex-1 px-4 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+            <button onclick="handleSearch()" class="bg-blue-600 hover:bg-blue-500 px-4 py-2 rounded-xl text-sm font-bold transition">Search</button>
         </div>
     </div>
 
     <main class="max-w-4xl mx-auto px-4 md:px-8">
         
         <div id="tab-dash" class="space-y-8 animate-in fade-in duration-500">
-            <header class="text-left pt-4">
-                <h2 class="text-3xl font-extrabold text-white">Your Mirror</h2>
-                <p class="text-slate-500 text-sm">Personal accounts saved to this device.</p>
+            <header class="text-center pt-4 mb-8">
+                <h2 class="text-4xl font-extrabold text-white">Your Mirror</h2>
+                <p class="text-slate-500 text-sm mt-2">Personal accounts saved to this device.</p>
             </header>
 
-            <div id="saved-area" class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div onclick="promptAdd('github')" class="glass p-6 rounded-3xl border-dashed border-2 border-white/10 flex flex-col items-center justify-center text-slate-500 cursor-pointer hover:border-blue-500 transition">
-                    <span class="text-2xl mb-2">+</span>
-                    <p class="text-xs font-bold uppercase">Link GitHub</p>
+            <div id="saved-area" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div onclick="promptAdd('github')" class="glass p-8 rounded-3xl border-dashed border-2 border-white/10 flex flex-col items-center justify-center text-slate-500 cursor-pointer hover:border-blue-500 hover:text-blue-400 transition group">
+                    <span class="text-4xl mb-2 group-hover:scale-110 transition">+</span>
+                    <p class="text-sm font-bold uppercase tracking-widest">Link GitHub</p>
                 </div>
-                <div onclick="promptAdd('leetcode')" class="glass p-6 rounded-3xl border-dashed border-2 border-white/10 flex flex-col items-center justify-center text-slate-500 cursor-pointer hover:border-yellow-500 transition">
-                    <span class="text-2xl mb-2">+</span>
-                    <p class="text-xs font-bold uppercase">Link LeetCode</p>
+                <div onclick="promptAdd('leetcode')" class="glass p-8 rounded-3xl border-dashed border-2 border-white/10 flex flex-col items-center justify-center text-slate-500 cursor-pointer hover:border-yellow-500 hover:text-yellow-400 transition group">
+                    <span class="text-4xl mb-2 group-hover:scale-110 transition">+</span>
+                    <p class="text-sm font-bold uppercase tracking-widest">Link LeetCode</p>
                 </div>
             </div>
 
             <div id="result-card" class="glass p-6 rounded-3xl hidden border-l-4 border-blue-500 mt-8">
                 <div class="flex items-center justify-between">
                     <div class="flex items-center gap-4">
-                        <img id="res-avatar" src="" class="w-14 h-14 rounded-xl">
+                        <img id="res-avatar" src="" class="w-16 h-16 rounded-xl border-2 border-blue-500">
                         <div>
-                            <h3 id="res-name" class="font-bold text-lg"></h3>
-                            <p id="res-type" class="text-xs text-blue-400 font-bold uppercase"></p>
+                            <h3 id="res-name" class="font-bold text-xl text-white"></h3>
+                            <p class="text-xs text-blue-400 font-bold uppercase tracking-widest">GitHub Profile Found</p>
                         </div>
                     </div>
-                    <button onclick="closeResult()" class="text-slate-500 text-xl">×</button>
+                    <button onclick="closeResult()" class="text-slate-500 text-3xl hover:text-white">&times;</button>
+                </div>
+                <div class="grid grid-cols-2 gap-4 mt-6 text-center">
+                    <div class="bg-slate-900/80 p-4 rounded-2xl">
+                        <p class="text-slate-500 text-xs font-bold uppercase mb-1">Repos</p>
+                        <p id="res-repos" class="text-2xl font-black text-white">0</p>
+                    </div>
+                    <div class="bg-slate-900/80 p-4 rounded-2xl">
+                        <p class="text-slate-500 text-xs font-bold uppercase mb-1">Followers</p>
+                        <p id="res-followers" class="text-2xl font-black text-white">0</p>
+                    </div>
                 </div>
             </div>
         </div>
 
         <div id="tab-focus" class="hidden flex flex-col items-center pt-10">
+            <h2 class="text-3xl font-bold mb-8 text-slate-300">Deep Work Engine</h2>
             <div id="circle" class="timer-circle mb-8">
-                <span id="display" class="text-6xl font-black">25:00</span>
+                <span id="display" class="text-6xl font-black text-white">25:00</span>
             </div>
-            <div class="flex gap-2 mb-8 overflow-x-auto w-full justify-center">
-                <button onclick="setTime(25)" class="glass px-5 py-2 rounded-full text-xs">25m</button>
-                <button onclick="setTime(45)" class="glass px-5 py-2 rounded-full text-xs">45m</button>
-                <button onclick="setTime(60)" class="glass px-5 py-2 rounded-full text-xs">60m</button>
+            <div class="flex gap-4 mb-10 overflow-x-auto w-full justify-center">
+                <button onclick="setTime(25)" class="glass px-6 py-2 rounded-full text-sm font-bold hover:border-blue-500 transition">25m</button>
+                <button onclick="setTime(45)" class="glass px-6 py-2 rounded-full text-sm font-bold hover:border-blue-500 transition">45m</button>
+                <button onclick="setTime(60)" class="glass px-6 py-2 rounded-full text-sm font-bold hover:border-blue-500 transition">60m</button>
             </div>
-            <button id="main-btn" onclick="toggleTimer()" class="w-full max-w-xs py-4 bg-blue-600 rounded-2xl font-black text-lg">START FOCUS</button>
+            <button id="main-btn" onclick="toggleTimer()" class="w-full max-w-md py-4 bg-blue-600 rounded-2xl font-black text-xl hover:bg-blue-500 hover:scale-105 transition-all shadow-lg shadow-blue-600/20">START FOCUS</button>
         </div>
     </main>
 
-    <nav class="fixed bottom-0 left-0 right-0 p-4 glass border-t border-white/5 flex justify-around md:hidden">
-        <button onclick="showTab('dash')" class="flex flex-col items-center gap-1">
-            <span class="text-xs font-bold">Dashboard</span>
+    <nav class="fixed bottom-0 left-0 right-0 p-4 glass border-t border-white/5 flex justify-around md:hidden z-50">
+        <button onclick="showTab('dash')" class="flex flex-col items-center gap-1 text-blue-400">
+            <span class="text-sm font-bold uppercase tracking-widest">Dashboard</span>
         </button>
-        <button onclick="showTab('focus')" class="flex flex-col items-center gap-1">
-            <span class="text-xs font-bold">Focus</span>
+        <button onclick="showTab('focus')" class="flex flex-col items-center gap-1 text-slate-400 hover:text-white transition">
+            <span class="text-sm font-bold uppercase tracking-widest">Focus</span>
         </button>
     </nav>
 
     <script>
-        // --- Persistence Logic ---
-        window.onload = () => {
-            const savedGH = localStorage.getItem('my-github');
-            if(savedGH) renderSaved('github', savedGH);
-            showTab('dash');
-        }
-
-        function promptAdd(type) {
-            const user = prompt(`Enter your ${type} username to link:`);
-            if(user) {
-                localStorage.setItem(`my-${type}`, user);
-                location.reload();
-            }
+        // --- Tab Switching Logic ---
+        function showTab(tab) {
+            document.getElementById('tab-dash').classList.toggle('hidden', tab !== 'dash');
+            document.getElementById('tab-focus').classList.toggle('hidden', tab !== 'focus');
         }
 
         // --- Search Logic ---
         async function handleSearch() {
             const user = document.getElementById('global-search').value;
             if(!user) return;
-            const res = await fetch(`https://api.github.com/users/${user}`);
-            const data = await res.json();
-            if(data.login) {
-                document.getElementById('result-card').classList.remove('hidden');
-                document.getElementById('res-avatar').src = data.avatar_url;
-                document.getElementById('res-name').innerText = data.name || data.login;
-                document.getElementById('res-type').innerText = "GitHub Found";
-            }
+            try {
+                const res = await fetch(`https://api.github.com/users/${user}`);
+                const data = await res.json();
+                if(data.login) {
+                    document.getElementById('result-card').classList.remove('hidden');
+                    document.getElementById('res-avatar').src = data.avatar_url;
+                    document.getElementById('res-name').innerText = data.name || data.login;
+                    document.getElementById('res-repos').innerText = data.public_repos;
+                    document.getElementById('res-followers').innerText = data.followers;
+                } else {
+                    alert("User not found!");
+                }
+            } catch(e) { console.error(e); }
         }
 
         function closeResult() { document.getElementById('result-card').classList.add('hidden'); }
 
-        function showTab(tab) {
-            document.getElementById('tab-dash').classList.toggle('hidden', tab !== 'dash');
-            document.getElementById('tab-focus').classList.toggle('hidden', tab !== 'focus');
+        // --- Placeholder for 'Link' buttons ---
+        function promptAdd(type) {
+            alert(`Linking ${type} functionality will be ready in Phase 2! Try the search bar above for now.`);
         }
 
-        // --- Timer Logic (Simplified for brevity) ---
+        // --- Timer Logic ---
         let sec = 1500; let t = null;
         function setTime(m) { sec = m*60; update(); }
         function update() { 
@@ -124,8 +139,17 @@
             document.getElementById('display').innerText = `${m}:${s<10?'0':''}${s}`;
         }
         function toggleTimer() {
-            if(t) { clearInterval(t); t=null; }
-            else { t=setInterval(()=>{sec--; update(); if(sec<=0)clearInterval(t)},1000); }
+            const btn = document.getElementById('main-btn');
+            const circle = document.getElementById('circle');
+            if(t) { 
+                clearInterval(t); t=null; 
+                btn.innerText="START FOCUS"; 
+                circle.classList.remove('active');
+            } else { 
+                t=setInterval(()=>{sec--; update(); if(sec<=0)clearInterval(t)},1000); 
+                btn.innerText="PAUSE";
+                circle.classList.add('active');
+            }
         }
     </script>
 </body>
