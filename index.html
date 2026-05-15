@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DevHawk | Your Developer Mirror</title>
+    <title>DevHawk | Your Developer Stats</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
@@ -12,7 +12,6 @@
         .timer-circle { width: 260px; height: 260px; border-radius: 50%; border: 6px solid #1e293b; display: flex; align-items: center; justify-content: center; position: relative; transition: all 0.5s; }
         .timer-circle.active { border-color: #3b82f6; box-shadow: 0 0 30px rgba(59, 130, 246, 0.3); }
         ::-webkit-scrollbar { display: none; }
-        /* Image invert for dark mode chart */
         .gh-chart { filter: hue-rotate(180deg) invert(1) opacity(0.8); } 
     </style>
 </head>
@@ -28,65 +27,102 @@
         </div>
     </nav>
 
-    <main class="max-w-5xl mx-auto px-4 md:px-8 mt-4">
+    <main class="max-w-6xl mx-auto px-4 md:px-8 mt-4">
         
         <div id="tab-dash" class="space-y-8 animate-in fade-in duration-500">
             
-            <div class="glass p-4 rounded-2xl flex gap-2">
-                <input id="global-search" type="text" placeholder="Search any developer's GitHub..." class="bg-slate-900/50 border border-white/10 rounded-xl flex-1 px-4 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
-                <button onclick="handleSearch()" class="bg-blue-600 hover:bg-blue-500 px-6 py-2 rounded-xl text-sm font-bold transition">Search</button>
+            <div class="glass p-4 rounded-2xl flex flex-col md:flex-row gap-2 max-w-2xl mx-auto">
+                <select id="search-type" class="bg-slate-800 text-white border border-white/10 rounded-xl px-4 py-2 outline-none text-sm font-bold focus:ring-2 focus:ring-blue-500">
+                    <option value="github">Search GitHub</option>
+                    <option value="leetcode">Search LeetCode</option>
+                </select>
+                <input id="global-search" type="text" placeholder="Enter developer username..." class="bg-slate-900/50 border border-white/10 rounded-xl flex-1 px-4 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+                <button onclick="handleSearch()" class="bg-blue-600 hover:bg-blue-500 px-8 py-2 rounded-xl text-sm font-bold transition">Search</button>
             </div>
 
             <header class="text-center pt-4 mb-4">
-                <h2 class="text-4xl font-extrabold text-white">Your Mirror</h2>
+                <h2 class="text-4xl font-extrabold text-white tracking-tight">Your Stats</h2>
+                <p class="text-slate-400 text-sm mt-2">Track your coding journey across platforms.</p>
             </header>
 
-            <div id="my-profile-card" class="glass p-8 rounded-3xl hidden border-t-4 border-blue-500">
-                <div class="flex flex-col md:flex-row items-center gap-6 mb-6">
-                    <img id="my-avatar" src="" class="w-20 h-20 rounded-2xl border-2 border-blue-500">
-                    <div class="text-center md:text-left">
-                        <h3 id="my-name" class="font-bold text-3xl text-white"></h3>
-                        <button onclick="unlinkAccount()" class="text-xs text-red-400 hover:underline mt-1">Unlink Account</button>
+            <div id="linked-stats-area" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div id="my-gh-card" class="glass p-6 rounded-3xl hidden border-t-4 border-blue-500 relative shadow-lg shadow-blue-500/10">
+                    <div class="flex items-center gap-4 mb-6">
+                        <img id="my-gh-avatar" src="" class="w-16 h-16 rounded-2xl border-2 border-blue-500">
+                        <div class="flex-1">
+                            <h3 id="my-gh-name" class="font-bold text-xl text-white"></h3>
+                            <button onclick="unlinkAccount('github')" class="text-xs text-red-400 hover:text-red-300">Unlink GitHub</button>
+                        </div>
+                        <a id="my-gh-link" href="#" target="_blank" class="bg-blue-600/20 text-blue-400 p-2 rounded-xl hover:bg-blue-600 hover:text-white transition text-xs font-bold">Open Profile ↗</a>
                     </div>
-                    <div class="flex gap-4 ml-auto">
-                        <div class="bg-slate-900/80 p-4 rounded-xl text-center min-w-[100px]">
-                            <p class="text-slate-500 text-xs font-bold uppercase mb-1">Repos</p>
-                            <p id="my-repos" class="text-xl font-black text-white">0</p>
+                    <div class="flex justify-between bg-slate-900/80 p-4 rounded-xl mb-4 text-center border border-white/5">
+                         <div class="flex-1 border-r border-white/10">
+                            <p class="text-slate-500 text-[10px] font-bold uppercase mb-1">Repos</p>
+                            <p id="my-gh-repos" class="text-2xl font-black text-white">0</p>
                         </div>
-                        <div class="bg-slate-900/80 p-4 rounded-xl text-center min-w-[100px]">
-                            <p class="text-slate-500 text-xs font-bold uppercase mb-1">Followers</p>
-                            <p id="my-followers" class="text-xl font-black text-white">0</p>
+                        <div class="flex-1">
+                            <p class="text-slate-500 text-[10px] font-bold uppercase mb-1">Followers</p>
+                            <p id="my-gh-followers" class="text-2xl font-black text-white">0</p>
                         </div>
+                    </div>
+                    <div class="bg-slate-900/80 p-3 rounded-xl overflow-hidden w-full overflow-x-auto text-center border border-white/5">
+                        <p class="text-slate-500 text-[10px] font-bold uppercase mb-2">Contributions</p>
+                        <img id="my-gh-chart" src="" alt="Contributions" class="gh-chart h-16 mx-auto">
                     </div>
                 </div>
-                <div class="bg-slate-900/80 p-4 rounded-2xl overflow-hidden w-full overflow-x-auto">
-                    <p class="text-slate-500 text-xs font-bold uppercase mb-2">GitHub Contributions</p>
-                    <img id="my-chart" src="" alt="Contributions" class="gh-chart min-w-[700px]">
+
+                <div id="my-lc-card" class="glass p-6 rounded-3xl hidden border-t-4 border-yellow-500 relative shadow-lg shadow-yellow-500/10">
+                     <div class="flex items-center gap-4 mb-6">
+                        <div class="w-16 h-16 bg-yellow-500/10 rounded-2xl flex items-center justify-center border-2 border-yellow-500 shadow-inner">
+                            <img src="https://upload.wikimedia.org/wikipedia/commons/1/19/LeetCode_logo_black.png" class="w-8 h-8 filter invert opacity-80">
+                        </div>
+                        <div class="flex-1">
+                            <h3 id="my-lc-name" class="font-bold text-xl text-white"></h3>
+                            <button onclick="unlinkAccount('leetcode')" class="text-xs text-red-400 hover:text-red-300">Unlink LeetCode</button>
+                        </div>
+                        <a id="my-lc-link" href="#" target="_blank" class="bg-yellow-500/20 text-yellow-500 p-2 rounded-xl hover:bg-yellow-500 hover:text-black transition text-xs font-bold">Open Profile ↗</a>
+                    </div>
+                     <div class="bg-slate-900/80 p-4 rounded-xl mb-4 flex justify-between text-center border border-white/5">
+                        <div class="flex-1 border-r border-white/10">
+                            <p class="text-slate-500 text-[10px] font-bold uppercase">Global Rank</p>
+                            <p id="my-lc-rank" class="text-lg font-black text-white">N/A</p>
+                        </div>
+                        <div class="flex-1">
+                            <p class="text-slate-500 text-[10px] font-bold uppercase">Acceptance</p>
+                            <p id="my-lc-acc" class="text-lg font-black text-white">0%</p>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-3 gap-3 text-center">
+                        <div class="bg-slate-900/80 p-3 rounded-xl border-b-2 border-green-500">
+                            <p class="text-slate-400 text-[10px] font-bold uppercase">Easy</p>
+                            <p id="my-lc-easy" class="text-xl font-black text-green-400">0</p>
+                        </div>
+                        <div class="bg-slate-900/80 p-3 rounded-xl border-b-2 border-yellow-500">
+                            <p class="text-slate-400 text-[10px] font-bold uppercase">Med</p>
+                            <p id="my-lc-med" class="text-xl font-black text-yellow-400">0</p>
+                        </div>
+                        <div class="bg-slate-900/80 p-3 rounded-xl border-b-2 border-red-500">
+                            <p class="text-slate-400 text-[10px] font-bold uppercase">Hard</p>
+                            <p id="my-lc-hard" class="text-xl font-black text-red-400">0</p>
+                        </div>
+                    </div>
                 </div>
             </div>
 
-            <div id="link-area" class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div onclick="promptAdd('github')" class="glass p-8 rounded-3xl border-dashed border-2 border-white/10 flex flex-col items-center justify-center text-slate-500 cursor-pointer hover:border-blue-500 hover:text-blue-400 transition">
-                    <span class="text-4xl mb-2">+</span>
-                    <p class="text-sm font-bold uppercase tracking-widest">Link GitHub</p>
+            <div id="link-buttons-area" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div id="btn-link-gh" onclick="promptAdd('github')" class="glass p-10 rounded-3xl border-dashed border-2 border-white/10 flex flex-col items-center justify-center text-slate-500 cursor-pointer hover:border-blue-500 hover:text-blue-400 transition hover:scale-[1.02]">
+                    <span class="text-5xl mb-3 font-light">+</span>
+                    <p class="text-sm font-bold uppercase tracking-widest">Link GitHub Account</p>
                 </div>
-                <div onclick="alert('LeetCode API proxy coming in Phase 2!')" class="glass p-8 rounded-3xl border-dashed border-2 border-white/10 flex flex-col items-center justify-center text-slate-500 cursor-pointer hover:border-yellow-500 hover:text-yellow-400 transition">
-                    <span class="text-4xl mb-2">+</span>
-                    <p class="text-sm font-bold uppercase tracking-widest">Link LeetCode</p>
+                <div id="btn-link-lc" onclick="promptAdd('leetcode')" class="glass p-10 rounded-3xl border-dashed border-2 border-white/10 flex flex-col items-center justify-center text-slate-500 cursor-pointer hover:border-yellow-500 hover:text-yellow-400 transition hover:scale-[1.02]">
+                    <span class="text-5xl mb-3 font-light">+</span>
+                    <p class="text-sm font-bold uppercase tracking-widest">Link LeetCode Account</p>
                 </div>
             </div>
             
-            <div id="result-card" class="glass p-6 rounded-3xl hidden border-l-4 border-blue-500 mt-4">
-                <div class="flex items-center justify-between">
-                    <div class="flex items-center gap-4">
-                        <img id="res-avatar" src="" class="w-16 h-16 rounded-xl border-2 border-blue-500">
-                        <div>
-                            <h3 id="res-name" class="font-bold text-xl text-white"></h3>
-                            <p class="text-xs text-blue-400 font-bold uppercase tracking-widest">Profile Found</p>
-                        </div>
-                    </div>
-                    <button onclick="closeResult()" class="text-slate-500 text-3xl hover:text-white">&times;</button>
-                </div>
+            <div id="result-card" class="glass p-8 rounded-3xl hidden mt-6 relative max-w-2xl mx-auto shadow-2xl">
+                <button onclick="closeResult()" class="absolute top-4 right-4 text-slate-500 text-3xl hover:text-white transition">&times;</button>
+                <div id="result-content"></div>
             </div>
         </div>
 
@@ -103,49 +139,34 @@
                     <button onclick="setCustom()" class="bg-blue-600 px-4 py-2 text-sm font-bold hover:bg-blue-500">Set</button>
                 </div>
             </div>
-            <button id="main-btn" onclick="toggleTimer()" class="w-full max-w-md py-4 bg-blue-600 rounded-2xl font-black text-xl hover:bg-blue-500 hover:scale-105 transition-all shadow-lg shadow-blue-600/20">START FOCUS</button>
+            <button id="main-btn" onclick="toggleTimer()" class="w-full max-w-md py-4 bg-blue-600 rounded-2xl font-black text-xl hover:bg-blue-500 hover:scale-[1.02] transition-all shadow-lg shadow-blue-600/20">START FOCUS</button>
         </div>
 
         <div id="tab-compare" class="hidden animate-in fade-in duration-500">
             <header class="text-center pt-4 mb-8">
                 <h2 class="text-4xl font-extrabold text-white">Developer Battle</h2>
-                <p class="text-slate-400 mt-2">Compare GitHub Stats</p>
+                <p class="text-slate-400 mt-2">Compare Stats Head-to-Head</p>
             </header>
             
+            <div class="flex justify-center mb-6">
+                <select id="compare-type" class="glass text-white rounded-xl px-6 py-3 outline-none font-bold focus:border-purple-500">
+                    <option value="github">Battle via GitHub Stats</option>
+                    <option value="leetcode">Battle via LeetCode Stats</option>
+                </select>
+            </div>
+
             <div class="flex flex-col md:flex-row gap-4 items-center justify-center mb-8">
                 <input id="user1" type="text" placeholder="Username 1" class="glass px-4 py-3 rounded-xl text-center w-full md:w-64 focus:border-purple-500 outline-none">
-                <span class="text-2xl font-black text-purple-500">VS</span>
+                <span class="text-3xl font-black text-purple-500 px-4">VS</span>
                 <input id="user2" type="text" placeholder="Username 2" class="glass px-4 py-3 rounded-xl text-center w-full md:w-64 focus:border-purple-500 outline-none">
             </div>
             <div class="text-center mb-8">
-                <button onclick="compareUsers()" class="bg-purple-600 hover:bg-purple-500 px-8 py-3 rounded-xl font-black text-lg transition shadow-lg shadow-purple-600/20">COMPARE NOW</button>
+                <button onclick="compareUsers()" class="bg-purple-600 hover:bg-purple-500 px-10 py-4 rounded-2xl font-black text-lg transition shadow-lg shadow-purple-600/20 hover:scale-105">COMPARE NOW</button>
             </div>
 
-            <div id="compare-results" class="grid grid-cols-1 md:grid-cols-2 gap-6 hidden">
-                <div class="glass p-6 rounded-3xl border-t-4 border-blue-500 text-center">
-                    <img id="c1-avatar" src="" class="w-24 h-24 rounded-full mx-auto mb-4 border-4 border-slate-800">
-                    <h3 id="c1-name" class="text-2xl font-bold mb-4"></h3>
-                    <div class="flex justify-between bg-slate-900/50 p-4 rounded-xl mb-2">
-                        <span class="text-slate-400 font-bold">Repos</span>
-                        <span id="c1-repos" class="font-black text-white"></span>
-                    </div>
-                    <div class="flex justify-between bg-slate-900/50 p-4 rounded-xl">
-                        <span class="text-slate-400 font-bold">Followers</span>
-                        <span id="c1-followers" class="font-black text-white"></span>
-                    </div>
-                </div>
-                <div class="glass p-6 rounded-3xl border-t-4 border-purple-500 text-center">
-                    <img id="c2-avatar" src="" class="w-24 h-24 rounded-full mx-auto mb-4 border-4 border-slate-800">
-                    <h3 id="c2-name" class="text-2xl font-bold mb-4"></h3>
-                    <div class="flex justify-between bg-slate-900/50 p-4 rounded-xl mb-2">
-                        <span class="text-slate-400 font-bold">Repos</span>
-                        <span id="c2-repos" class="font-black text-white"></span>
-                    </div>
-                    <div class="flex justify-between bg-slate-900/50 p-4 rounded-xl">
-                        <span class="text-slate-400 font-bold">Followers</span>
-                        <span id="c2-followers" class="font-black text-white"></span>
-                    </div>
-                </div>
+            <div id="compare-results" class="grid grid-cols-1 md:grid-cols-2 gap-8 hidden max-w-4xl mx-auto">
+                <div id="c1-card" class="glass p-6 rounded-3xl border-t-4 border-blue-500 text-center shadow-lg"></div>
+                <div id="c2-card" class="glass p-6 rounded-3xl border-t-4 border-purple-500 text-center shadow-lg"></div>
             </div>
         </div>
 
@@ -153,9 +174,9 @@
 
     <nav class="fixed bottom-0 left-0 right-0 p-4 glass border-t border-white/5 flex justify-around md:hidden z-50">
         <button onclick="showTab('dash')" class="flex flex-col items-center gap-1">
-            <span class="text-xs font-bold uppercase tracking-widest">Dash</span>
+            <span class="text-xs font-bold uppercase tracking-widest text-white">Stats</span>
         </button>
-        <button onclick="showTab('pomo')" class="flex flex-col items-center gap-1">
+        <button onclick="showTab('pomo')" class="flex flex-col items-center gap-1 text-slate-400">
             <span class="text-xs font-bold uppercase tracking-widest">Pomodoro</span>
         </button>
         <button onclick="showTab('compare')" class="flex flex-col items-center gap-1 text-purple-400">
@@ -164,28 +185,64 @@
     </nav>
 
     <script>
-        // --- On Load: Check if GitHub is Linked ---
+        // Mega Stats API for LeetCode
+        const LC_API = 'https://leetcode-stats-api.herokuapp.com/';
+
+        // --- On Load: Check Linked Accounts ---
         window.onload = async () => {
             const savedGH = localStorage.getItem('my-github');
+            const savedLC = localStorage.getItem('my-leetcode');
+            
             if(savedGH) {
-                document.getElementById('link-area').classList.add('hidden');
-                document.getElementById('my-profile-card').classList.remove('hidden');
-                
-                // Fetch basic stats
-                const res = await fetch(`https://api.github.com/users/${savedGH}`);
-                const data = await res.json();
-                if(data.login) {
-                    document.getElementById('my-avatar').src = data.avatar_url;
-                    document.getElementById('my-name').innerText = data.name || data.login;
-                    document.getElementById('my-repos').innerText = data.public_repos;
-                    document.getElementById('my-followers').innerText = data.followers;
-                    // Hackathon API Trick: Third party contribution chart generator
-                    document.getElementById('my-chart').src = `https://ghchart.rshah.org/${savedGH}`;
-                }
+                document.getElementById('btn-link-gh').classList.add('hidden');
+                document.getElementById('my-gh-card').classList.remove('hidden');
+                fetchGHProfile(savedGH, 'my-gh');
+            }
+            if(savedLC) {
+                document.getElementById('btn-link-lc').classList.add('hidden');
+                document.getElementById('my-lc-card').classList.remove('hidden');
+                fetchLCProfile(savedLC, 'my-lc');
             }
         }
 
-        // --- Tab Switching Logic ---
+        // --- Fetch Helpers for Dashboard ---
+        async function fetchGHProfile(username, prefix) {
+            try {
+                const res = await fetch(`https://api.github.com/users/${username}`);
+                const data = await res.json();
+                if(data.login) {
+                    document.getElementById(`${prefix}-avatar`).src = data.avatar_url;
+                    document.getElementById(`${prefix}-name`).innerText = data.name || data.login;
+                    document.getElementById(`${prefix}-repos`).innerText = data.public_repos;
+                    document.getElementById(`${prefix}-followers`).innerText = data.followers;
+                    document.getElementById(`${prefix}-link`).href = data.html_url;
+                    if(document.getElementById(`${prefix}-chart`)) {
+                        document.getElementById(`${prefix}-chart`).src = `https://ghchart.rshah.org/${username}`;
+                    }
+                }
+            } catch(e) { console.error("GH Fetch Error", e); }
+        }
+
+        async function fetchLCProfile(username, prefix) {
+            try {
+                document.getElementById(`${prefix}-name`).innerText = "Loading...";
+                const res = await fetch(`${LC_API}${username}`);
+                const data = await res.json();
+                if(data.status === "success") {
+                    document.getElementById(`${prefix}-name`).innerText = username;
+                    document.getElementById(`${prefix}-rank`).innerText = data.ranking || 'N/A';
+                    document.getElementById(`${prefix}-acc`).innerText = `${data.acceptanceRate}%` || '0%';
+                    document.getElementById(`${prefix}-easy`).innerText = data.easySolved || 0;
+                    document.getElementById(`${prefix}-med`).innerText = data.mediumSolved || 0;
+                    document.getElementById(`${prefix}-hard`).innerText = data.hardSolved || 0;
+                    document.getElementById(`${prefix}-link`).href = `https://leetcode.com/u/${username}/`;
+                } else {
+                    document.getElementById(`${prefix}-name`).innerText = "API Limit/Error";
+                }
+            } catch(e) { console.error("LC Fetch Error", e); }
+        }
+
+        // --- Tab Switching ---
         function showTab(tab) {
             ['dash', 'pomo', 'compare'].forEach(t => {
                 document.getElementById('tab-'+t).classList.add('hidden');
@@ -195,73 +252,139 @@
             document.getElementById('btn-'+tab)?.classList.add('bg-white/10');
         }
 
-        // --- Link & Search Logic ---
+        // --- Linking Logic ---
         function promptAdd(type) {
-            if(type === 'github') {
-                const user = prompt(`Enter your GitHub username to link permanently:`);
-                if(user) { localStorage.setItem('my-github', user); location.reload(); }
-            }
+            const user = prompt(`Enter your ${type} username to link to Your Stats:`);
+            if(user) { localStorage.setItem(`my-${type}`, user.trim()); location.reload(); }
         }
-        function unlinkAccount() { localStorage.removeItem('my-github'); location.reload(); }
+        function unlinkAccount(type) { localStorage.removeItem(`my-${type}`); location.reload(); }
 
+        // --- Supercharged Global Search Logic ---
         async function handleSearch() {
-            const user = document.getElementById('global-search').value;
+            const user = document.getElementById('global-search').value.trim();
+            const type = document.getElementById('search-type').value;
+            const card = document.getElementById('result-card');
+            const content = document.getElementById('result-content');
+            
             if(!user) return;
-            const res = await fetch(`https://api.github.com/users/${user}`);
-            const data = await res.json();
-            if(data.login) {
-                document.getElementById('result-card').classList.remove('hidden');
-                document.getElementById('res-avatar').src = data.avatar_url;
-                document.getElementById('res-name').innerText = data.name || data.login;
+            card.classList.remove('hidden');
+            content.innerHTML = `<div class="text-center py-8"><p class="animate-pulse text-xl font-bold">Scanning ${type} for ${user}...</p></div>`;
+
+            if(type === 'github') {
+                card.className = "glass p-8 rounded-3xl hidden border-l-8 mt-6 relative max-w-2xl mx-auto shadow-2xl border-blue-500 block";
+                const res = await fetch(`https://api.github.com/users/${user}`);
+                const data = await res.json();
+                if(data.login) {
+                    content.innerHTML = `
+                        <div class="flex items-center gap-6 mb-6">
+                            <img src="${data.avatar_url}" class="w-20 h-20 rounded-2xl border-2 border-blue-500 shadow-lg">
+                            <div class="flex-1">
+                                <h3 class="font-bold text-2xl">${data.name || data.login}</h3>
+                                <p class="text-sm text-blue-400 font-bold">@${data.login}</p>
+                            </div>
+                            <a href="${data.html_url}" target="_blank" class="bg-blue-600 px-4 py-2 rounded-xl font-bold text-sm hover:bg-blue-500 transition">View on GitHub</a>
+                        </div>
+                        <div class="grid grid-cols-3 gap-4 text-center">
+                            <div class="bg-slate-900/80 p-4 rounded-xl border border-white/5"><p class="text-slate-500 text-xs font-bold uppercase mb-1">Repos</p><p class="text-2xl font-black">${data.public_repos}</p></div>
+                            <div class="bg-slate-900/80 p-4 rounded-xl border border-white/5"><p class="text-slate-500 text-xs font-bold uppercase mb-1">Followers</p><p class="text-2xl font-black">${data.followers}</p></div>
+                            <div class="bg-slate-900/80 p-4 rounded-xl border border-white/5"><p class="text-slate-500 text-xs font-bold uppercase mb-1">Following</p><p class="text-2xl font-black">${data.following}</p></div>
+                        </div>
+                    `;
+                } else { content.innerHTML = `<p class='text-red-400 text-center py-4'>GitHub User "${user}" not found.</p>`; }
+            } else {
+                card.className = "glass p-8 rounded-3xl hidden border-l-8 mt-6 relative max-w-2xl mx-auto shadow-2xl border-yellow-500 block";
+                const res = await fetch(`${LC_API}${user}`);
+                const data = await res.json();
+                if(data.status === "success") {
+                    content.innerHTML = `
+                        <div class="flex items-center gap-6 mb-6">
+                            <div class="w-20 h-20 bg-yellow-500/10 rounded-2xl flex items-center justify-center border-2 border-yellow-500"><span class="text-4xl">🚀</span></div>
+                            <div class="flex-1">
+                                <h3 class="font-bold text-2xl">${user}</h3>
+                                <p class="text-sm text-yellow-500 font-bold uppercase">LeetCode Stats Loaded</p>
+                            </div>
+                            <a href="https://leetcode.com/u/${user}/" target="_blank" class="bg-yellow-500 text-black px-4 py-2 rounded-xl font-bold text-sm hover:bg-yellow-400 transition">View on LeetCode</a>
+                        </div>
+                        <div class="grid grid-cols-2 gap-4 text-center mb-4">
+                            <div class="bg-slate-900/80 p-4 rounded-xl border border-white/5"><p class="text-slate-500 text-xs font-bold uppercase mb-1">Global Ranking</p><p class="text-2xl font-black">${data.ranking}</p></div>
+                            <div class="bg-slate-900/80 p-4 rounded-xl border border-white/5"><p class="text-slate-500 text-xs font-bold uppercase mb-1">Acceptance Rate</p><p class="text-2xl font-black">${data.acceptanceRate}%</p></div>
+                        </div>
+                        <div class="grid grid-cols-3 gap-2 text-center">
+                            <div class="bg-slate-900/80 p-3 rounded-xl border-b-4 border-green-500"><p class="text-slate-400 text-[10px] font-bold uppercase">Easy</p><p class="text-xl font-black text-green-400">${data.easySolved}</p></div>
+                            <div class="bg-slate-900/80 p-3 rounded-xl border-b-4 border-yellow-500"><p class="text-slate-400 text-[10px] font-bold uppercase">Medium</p><p class="text-xl font-black text-yellow-400">${data.mediumSolved}</p></div>
+                            <div class="bg-slate-900/80 p-3 rounded-xl border-b-4 border-red-500"><p class="text-slate-400 text-[10px] font-bold uppercase">Hard</p><p class="text-xl font-black text-red-400">${data.hardSolved}</p></div>
+                        </div>
+                    `;
+                } else { content.innerHTML = `<p class='text-red-400 text-center py-4'>LeetCode User "${user}" not found.</p>`; }
             }
         }
         function closeResult() { document.getElementById('result-card').classList.add('hidden'); }
 
-        // --- Pomodoro Timer Logic ---
-        let sec = 1500; let t = null;
-        function setTime(m) { sec = m*60; update(); }
-        function setCustom() {
-            const val = document.getElementById('custom-min').value;
-            if(val && val > 0) { setTime(val); }
-        }
-        function update() { 
-            const m = Math.floor(sec/60); const s = sec%60;
-            document.getElementById('display').innerText = `${m}:${s<10?'0':''}${s}`;
-        }
-        function toggleTimer() {
-            const btn = document.getElementById('main-btn');
-            const circle = document.getElementById('circle');
-            if(t) { 
-                clearInterval(t); t=null; 
-                btn.innerText="START FOCUS"; circle.classList.remove('active');
-            } else { 
-                t=setInterval(()=>{sec--; update(); if(sec<=0)clearInterval(t)},1000); 
-                btn.innerText="PAUSE"; circle.classList.add('active');
+        // --- Advanced Compare Users Logic ---
+        async function compareUsers() {
+            const type = document.getElementById('compare-type').value;
+            const u1 = document.getElementById('user1').value.trim();
+            const u2 = document.getElementById('user2').value.trim();
+            if(!u1 || !u2) return alert("Enter both usernames to start the battle!");
+
+            document.getElementById('compare-results').classList.remove('hidden');
+            const c1 = document.getElementById('c1-card');
+            const c2 = document.getElementById('c2-card');
+            
+            c1.innerHTML = `<p class="animate-pulse py-10">Fetching ${u1}...</p>`;
+            c2.innerHTML = `<p class="animate-pulse py-10">Fetching ${u2}...</p>`;
+
+            if(type === 'github') {
+                c1.className = "glass p-6 rounded-3xl border-t-8 border-blue-500 text-center shadow-lg";
+                c2.className = "glass p-6 rounded-3xl border-t-8 border-purple-500 text-center shadow-lg";
+                
+                const fetchGH = async (u, target) => {
+                    const res = await fetch(`https://api.github.com/users/${u}`);
+                    const data = await res.json();
+                    if(data.login) {
+                        target.innerHTML = `
+                            <img src="${data.avatar_url}" class="w-24 h-24 rounded-full mx-auto mb-4 border-4 border-slate-800 shadow-xl">
+                            <h3 class="text-2xl font-bold mb-6">${data.login}</h3>
+                            <div class="flex justify-between bg-slate-900/80 p-4 rounded-xl mb-3 border border-white/5"><span class="text-slate-400 font-bold text-sm">Public Repos</span><span class="font-black text-white text-lg">${data.public_repos}</span></div>
+                            <div class="flex justify-between bg-slate-900/80 p-4 rounded-xl mb-3 border border-white/5"><span class="text-slate-400 font-bold text-sm">Followers</span><span class="font-black text-white text-lg">${data.followers}</span></div>
+                            <div class="flex justify-between bg-slate-900/80 p-4 rounded-xl mb-3 border border-white/5"><span class="text-slate-400 font-bold text-sm">Following</span><span class="font-black text-white text-lg">${data.following}</span></div>
+                            <div class="flex justify-between bg-slate-900/80 p-4 rounded-xl border border-white/5"><span class="text-slate-400 font-bold text-sm">Public Gists</span><span class="font-black text-white text-lg">${data.public_gists}</span></div>
+                        `;
+                    } else { target.innerHTML = `<p class="py-10 text-red-400">User ${u} not found.</p>`; }
+                };
+                fetchGH(u1, c1); fetchGH(u2, c2);
+            } else {
+                c1.className = "glass p-6 rounded-3xl border-t-8 border-yellow-500 text-center shadow-lg";
+                c2.className = "glass p-6 rounded-3xl border-t-8 border-orange-500 text-center shadow-lg";
+                
+                const fetchLC = async (u, target) => {
+                    const res = await fetch(`${LC_API}${u}`);
+                    const data = await res.json();
+                    if(data.status === "success") {
+                        target.innerHTML = `
+                            <div class="w-24 h-24 bg-yellow-500/10 rounded-full mx-auto mb-4 flex items-center justify-center border-4 border-slate-800 text-4xl shadow-xl">🚀</div>
+                            <h3 class="text-2xl font-bold mb-6">${u}</h3>
+                            <div class="flex justify-between bg-slate-900/80 p-4 rounded-xl mb-3 border border-white/5"><span class="text-slate-400 font-bold text-sm">Total Solved</span><span class="font-black text-white text-lg">${data.totalSolved}</span></div>
+                            <div class="flex justify-between bg-slate-900/80 p-4 rounded-xl mb-3 border border-white/5"><span class="text-slate-400 font-bold text-sm">Global Ranking</span><span class="font-black text-white text-lg">${data.ranking}</span></div>
+                            <div class="flex justify-between bg-slate-900/80 p-4 rounded-xl mb-3 border border-white/5"><span class="text-slate-400 font-bold text-sm">Acceptance Rate</span><span class="font-black text-white text-lg">${data.acceptanceRate}%</span></div>
+                            <div class="flex justify-between bg-slate-900/80 p-4 rounded-xl border border-white/5"><span class="text-slate-400 font-bold text-sm">Contribution Pts</span><span class="font-black text-white text-lg">${data.contributionPoints}</span></div>
+                        `;
+                    } else { target.innerHTML = `<p class="py-10 text-red-400">User ${u} not found.</p>`; }
+                };
+                fetchLC(u1, c1); fetchLC(u2, c2);
             }
         }
 
-        // --- Compare Users Logic ---
-        async function compareUsers() {
-            const u1 = document.getElementById('user1').value;
-            const u2 = document.getElementById('user2').value;
-            if(!u1 || !u2) return alert("Enter both usernames!");
-
-            document.getElementById('compare-results').classList.remove('hidden');
-
-            // Fetch User 1
-            fetch(`https://api.github.com/users/${u1}`).then(r=>r.json()).then(d1 => {
-                document.getElementById('c1-avatar').src = d1.avatar_url || '';
-                document.getElementById('c1-name').innerText = d1.login || 'N/A';
-                document.getElementById('c1-repos').innerText = d1.public_repos || '0';
-                document.getElementById('c1-followers').innerText = d1.followers || '0';
-            });
-            // Fetch User 2
-            fetch(`https://api.github.com/users/${u2}`).then(r=>r.json()).then(d2 => {
-                document.getElementById('c2-avatar').src = d2.avatar_url || '';
-                document.getElementById('c2-name').innerText = d2.login || 'N/A';
-                document.getElementById('c2-repos').innerText = d2.public_repos || '0';
-                document.getElementById('c2-followers').innerText = d2.followers || '0';
-            });
+        // --- Pomodoro Timer Logic ---
+        let sec = 1500; let t = null;
+        function setTime(m) { sec = m*60; update(); }
+        function setCustom() { const val = document.getElementById('custom-min').value; if(val && val > 0) { setTime(val); } }
+        function update() { const m = Math.floor(sec/60); const s = sec%60; document.getElementById('display').innerText = `${m}:${s<10?'0':''}${s}`; }
+        function toggleTimer() {
+            const btn = document.getElementById('main-btn');
+            const circle = document.getElementById('circle');
+            if(t) { clearInterval(t); t=null; btn.innerText="START FOCUS"; circle.classList.remove('active'); } 
+            else { t=setInterval(()=>{sec--; update(); if(sec<=0)clearInterval(t)},1000); btn.innerText="PAUSE"; circle.classList.add('active'); }
         }
     </script>
 </body>
