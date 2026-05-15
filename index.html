@@ -88,8 +88,8 @@
                             <p id="my-lc-rank" class="text-lg font-black text-white">N/A</p>
                         </div>
                         <div class="flex-1">
-                            <p class="text-slate-500 text-[10px] font-bold uppercase">Acceptance</p>
-                            <p id="my-lc-acc" class="text-lg font-black text-white">0%</p>
+                            <p class="text-slate-500 text-[10px] font-bold uppercase">Total Solved</p>
+                            <p id="my-lc-total" class="text-lg font-black text-white">0</p>
                         </div>
                     </div>
                     <div class="grid grid-cols-3 gap-3 text-center">
@@ -185,7 +185,7 @@
     </nav>
 
     <script>
-        // NEW RELIABLE VERCEL LEETCODE API 
+        // API Endpoint for LeetCode
         const LC_API = 'https://leetcode-api-faisalshohag.vercel.app/';
 
         // --- On Load: Check Linked Accounts ---
@@ -234,7 +234,7 @@
 
                 document.getElementById(`${prefix}-name`).innerText = username;
                 document.getElementById(`${prefix}-rank`).innerText = data.ranking || 'N/A';
-                document.getElementById(`${prefix}-acc`).innerText = data.acceptanceRate ? `${data.acceptanceRate}%` : '0%';
+                document.getElementById(`${prefix}-total`).innerText = data.totalSolved || 0;
                 document.getElementById(`${prefix}-easy`).innerText = data.easySolved || 0;
                 document.getElementById(`${prefix}-med`).innerText = data.mediumSolved || 0;
                 document.getElementById(`${prefix}-hard`).innerText = data.hardSolved || 0;
@@ -306,13 +306,13 @@
                                 <div class="w-20 h-20 bg-yellow-500/10 rounded-2xl flex items-center justify-center border-2 border-yellow-500"><span class="text-4xl">🚀</span></div>
                                 <div class="flex-1">
                                     <h3 class="font-bold text-2xl">${user}</h3>
-                                    <p class="text-sm text-yellow-500 font-bold uppercase">LeetCode Stats Loaded</p>
+                                    <p class="text-sm text-yellow-500 font-bold uppercase">LeetCode Profile</p>
                                 </div>
                                 <a href="https://leetcode.com/u/${user}/" target="_blank" class="bg-yellow-500 text-black px-4 py-2 rounded-xl font-bold text-sm hover:bg-yellow-400 transition">View on LeetCode</a>
                             </div>
                             <div class="grid grid-cols-2 gap-4 text-center mb-4">
                                 <div class="bg-slate-900/80 p-4 rounded-xl border border-white/5"><p class="text-slate-500 text-xs font-bold uppercase mb-1">Global Ranking</p><p class="text-2xl font-black">${data.ranking}</p></div>
-                                <div class="bg-slate-900/80 p-4 rounded-xl border border-white/5"><p class="text-slate-500 text-xs font-bold uppercase mb-1">Acceptance Rate</p><p class="text-2xl font-black">${data.acceptanceRate}%</p></div>
+                                <div class="bg-slate-900/80 p-4 rounded-xl border border-white/5"><p class="text-slate-500 text-xs font-bold uppercase mb-1">Total Solved</p><p class="text-2xl font-black">${data.totalSolved}</p></div>
                             </div>
                             <div class="grid grid-cols-3 gap-2 text-center">
                                 <div class="bg-slate-900/80 p-3 rounded-xl border-b-4 border-green-500"><p class="text-slate-400 text-[10px] font-bold uppercase">Easy</p><p class="text-xl font-black text-green-400">${data.easySolved}</p></div>
@@ -376,10 +376,11 @@
                             target.innerHTML = `
                                 <div class="w-24 h-24 bg-yellow-500/10 rounded-full mx-auto mb-4 flex items-center justify-center border-4 border-slate-800 text-4xl shadow-xl">🚀</div>
                                 <h3 class="text-2xl font-bold mb-6">${u}</h3>
-                                <div class="flex justify-between bg-slate-900/80 p-4 rounded-xl mb-3 border border-white/5"><span class="text-slate-400 font-bold text-sm">Total Solved</span><span class="font-black text-white text-lg">${data.totalSolved}</span></div>
                                 <div class="flex justify-between bg-slate-900/80 p-4 rounded-xl mb-3 border border-white/5"><span class="text-slate-400 font-bold text-sm">Global Ranking</span><span class="font-black text-white text-lg">${data.ranking}</span></div>
-                                <div class="flex justify-between bg-slate-900/80 p-4 rounded-xl mb-3 border border-white/5"><span class="text-slate-400 font-bold text-sm">Acceptance Rate</span><span class="font-black text-white text-lg">${data.acceptanceRate}%</span></div>
-                                <div class="flex justify-between bg-slate-900/80 p-4 rounded-xl border border-white/5"><span class="text-slate-400 font-bold text-sm">Contribution Pts</span><span class="font-black text-white text-lg">${data.contributionPoints}</span></div>
+                                <div class="flex justify-between bg-slate-900/80 p-4 rounded-xl mb-3 border border-white/5"><span class="text-slate-400 font-bold text-sm">Total Solved</span><span class="font-black text-white text-lg">${data.totalSolved}</span></div>
+                                <div class="flex justify-between bg-slate-900/80 p-4 rounded-xl mb-3 border border-white/5"><span class="text-green-400 font-bold text-sm">Easy</span><span class="font-black text-white text-lg">${data.easySolved}</span></div>
+                                <div class="flex justify-between bg-slate-900/80 p-4 rounded-xl mb-3 border border-white/5"><span class="text-yellow-400 font-bold text-sm">Medium</span><span class="font-black text-white text-lg">${data.mediumSolved}</span></div>
+                                <div class="flex justify-between bg-slate-900/80 p-4 rounded-xl border border-white/5"><span class="text-red-400 font-bold text-sm">Hard</span><span class="font-black text-white text-lg">${data.hardSolved}</span></div>
                             `;
                         } else { throw new Error("Not found"); }
                     } catch(e) { target.innerHTML = `<p class="py-10 text-red-400">User ${u} not found.</p>`; }
